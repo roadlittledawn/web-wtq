@@ -27,7 +27,7 @@ export const wordEntrySchema = baseEntrySchema.extend({
  */
 export const phraseEntrySchema = baseEntrySchema.extend({
   type: z.literal("phrase"),
-  name: z.string().min(1, "Name is required"),
+  body: z.string().min(1, "Phrase text is required"),
   definition: z.string().min(1, "Definition is required"),
   source: z.string().optional(),
   notes: z.string().optional(),

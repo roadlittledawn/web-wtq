@@ -40,7 +40,7 @@ export interface WordEntry extends BaseEntry {
  */
 export interface PhraseEntry extends BaseEntry {
   type: "phrase";
-  name: string;
+  body: string;
   definition: string;
   source?: string;
   notes?: string;
