@@ -11,7 +11,7 @@
   - Set up environment variables template (`.env.example`)
   - _Requirements: 14.4_
 
-- [ ] 2. Implement database models and connection
+- [x] 2. Implement database models and connection
 
   - [x] 2.1 Create MongoDB connection utility with connection pooling
 
@@ -29,9 +29,9 @@
     - Implement index creation script for entries, tags, and users collections
     - _Requirements: 5.1, 6.1, 7.1_
 
-- [ ] 3. Implement authentication utilities
+- [x] 3. Implement authentication utilities
 
-  - [ ] 3.1 Create password hashing and verification utilities
+  - [x] 3.1 Create password hashing and verification utilities
 
     - Implement bcrypt hashing with work factor 12
     - Implement password verification function
@@ -42,7 +42,7 @@
     - **Property 1: Password verification correctness**
     - **Validates: Requirements 1.1**
 
-  - [ ] 3.3 Create JWT token generation and validation utilities
+  - [x] 3.3 Create JWT token generation and validation utilities
 
     - Implement token generation with 24-hour expiration
     - Implement token verification function
@@ -57,7 +57,7 @@
     - **Property 4: Expired token rejection**
     - **Validates: Requirements 1.5**
 
-- [ ] 4. Implement validation schemas
+- [-] 4. Implement validation schemas
 
   - [ ] 4.1 Create Zod schemas for each entry type
 
