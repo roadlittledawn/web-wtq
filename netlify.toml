@@ -8,8 +8,6 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
-  # Increase timeout for database operations
-  timeout = 10
 
 # API endpoint redirects
 [[redirects]]
