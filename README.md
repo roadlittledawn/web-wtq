@@ -39,27 +39,52 @@ A web application for curating and organizing a personal collection of words, ph
    npm install
    ```
 
-3. Copy `.env.example` to `.env.local` and fill in your environment variables:
+3. Copy `.env.example` to `.env` and fill in your environment variables:
 
    ```bash
-   cp .env.example .env.local
+   cp .env.example .env
    ```
 
-4. Update the environment variables in `.env.local`:
+4. Generate a password hash for your admin user:
+
+   ```bash
+   npx tsx scripts/generate-password-hash.ts yourPassword123
+   ```
+
+   Copy the output and add it to your `.env` file.
+
+5. Update the environment variables in `.env`:
+
    - `MONGODB_URI`: Your MongoDB connection string
-   - `JWT_SECRET`: A strong secret key for JWT tokens
-   - `AUTHOR_IMAGE_API_URL`: External API URL for author images
-   - `AUTHOR_IMAGE_API_KEY`: API key if required
+   - `JWT_SECRET`: A strong secret key for JWT tokens (generate with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`)
+   - `ADMIN_USERNAME`: Your admin username (default: admin)
+   - `ADMIN_PASSWORD_HASH`: The bcrypt hash from step 4
+   - `AUTHOR_IMAGE_API_URL`: External API URL for author images (optional)
+   - `AUTHOR_IMAGE_API_KEY`: API key if required (optional)
+
+6. Set up database indexes:
+
+   ```bash
+   npx tsx scripts/setup-db.ts
+   ```
 
 ### Development
 
-Run the development server:
+Run the development server with Netlify Functions:
+
+```bash
+netlify dev
+```
+
+Or run Next.js directly (without serverless functions):
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the application.
+Open [http://localhost:8888](http://localhost:8888) (netlify dev) or [http://localhost:3000](http://localhost:3000) (npm run dev) to view the application.
+
+Login at `/admin/login` with your configured username and password.
 
 ### Testing
 

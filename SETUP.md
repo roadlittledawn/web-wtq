@@ -1,94 +1,74 @@
-# Project Setup Summary
+# Quick Setup Guide
 
-## Completed Setup Tasks
+## 1. Generate Your Password Hash
 
-### 1. Next.js 14+ Project with TypeScript ✓
+Run this command with your desired password:
 
-- Initialized Next.js 14.2.33 with TypeScript
-- Configured `tsconfig.json` with path aliases (`@/*`)
-- Created basic app structure with layout and home page
-
-### 2. Tailwind CSS Configuration ✓
-
-- Installed and configured Tailwind CSS
-- Set up `tailwind.config.ts` with content paths
-- Created `postcss.config.js` for PostCSS processing
-- Added global styles in `app/globals.css`
-
-### 3. Dependencies Installed ✓
-
-**Production Dependencies:**
-
-- `next` ^14.2.0 - React framework
-- `react` ^18.3.0 - React library
-- `react-dom` ^18.3.0 - React DOM
-- `mongodb` ^6.3.0 - MongoDB driver
-- `bcrypt` ^5.1.1 - Password hashing
-- `jsonwebtoken` ^9.0.2 - JWT authentication
-- `zod` ^3.22.4 - Schema validation
-- `react-select` ^5.8.0 - Multi-select component
-
-**Dev Dependencies:**
-
-- `vitest` ^1.2.0 - Testing framework
-- `fast-check` ^3.15.0 - Property-based testing
-- `@testing-library/react` ^14.1.2 - React testing utilities
-- `@testing-library/jest-dom` ^6.2.0 - Jest DOM matchers
-- `jsdom` - DOM environment for tests
-- TypeScript and type definitions
-- ESLint and Next.js ESLint config
-
-### 4. Directory Structure Created ✓
-
-```
-├── app/                    # Next.js app directory (pages and layouts)
-├── components/             # React components
-├── lib/                    # Utility functions and shared logic
-├── netlify/functions/      # Netlify serverless functions
-└── types/                  # TypeScript type definitions
+```bash
+npx tsx scripts/generate-password-hash.ts yourSecurePassword
 ```
 
-### 5. Netlify Functions Configuration ✓
+You'll get output like:
 
-- Created `netlify.toml` with:
-  - Build command: `npm run build`
-  - Functions directory: `netlify/functions`
-  - API redirects: `/api/*` → `/.netlify/functions/:splat`
-  - SPA fallback redirect
+```
+✓ Password hash generated successfully!
 
-### 6. Environment Variables Template ✓
+Add these to your .env file:
 
-- Created `.env.example` with:
-  - `MONGODB_URI` - MongoDB connection string
-  - `JWT_SECRET` - JWT signing secret
-  - `JWT_EXPIRATION` - Token expiration time
-  - `AUTHOR_IMAGE_API_URL` - External API for author images
-  - `AUTHOR_IMAGE_API_KEY` - API key if needed
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD_HASH=$2b$10$abc123...xyz789
+```
 
-### 7. Testing Configuration ✓
+## 2. Update Your .env File
 
-- Configured Vitest with `vitest.config.ts`
-- Set up jsdom environment for React component testing
-- Created `vitest.setup.ts` for test setup
-- Configured path aliases for tests
-- Added test scripts to `package.json`:
-  - `npm test` - Run tests once
-  - `npm run test:watch` - Run tests in watch mode
+Add these lines to your `.env` file:
 
-## Verification
+```bash
+# MongoDB Connection
+MONGODB_URI=mongodb+srv://your-connection-string
 
-✅ **Build Test**: `npm run build` - Successful ✅ **Test Framework**: `npm test` - Working (no tests yet) ✅ **Dependencies**: All installed successfully
+# JWT Configuration
+JWT_SECRET=generate-with-crypto-randomBytes-32-hex
+JWT_EXPIRATION=24h
 
-## Next Steps
+# Admin Authentication
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD_HASH=$2b$10$your-hash-from-step-1
+```
 
-The project structure is ready for implementation. You can now proceed with:
+Generate JWT_SECRET with:
 
-1. Task 2: Implement database models and connection
-2. Task 3: Implement authentication utilities
-3. And so on...
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
 
-## Notes
+## 3. Set Up Database
 
-- Node.js version warnings for some packages (requires Node 20+) but project builds successfully
-- Vitest is configured and ready for both unit tests and property-based tests
-- All directories have `.gitkeep` files to ensure they're tracked by git
+```bash
+npx tsx scripts/setup-db.ts
+```
+
+## 4. Run Locally
+
+```bash
+netlify dev
+```
+
+Visit http://localhost:8888 and log in at `/admin/login`
+
+## Troubleshooting
+
+### "Missing ADMIN_USERNAME or ADMIN_PASSWORD_HASH"
+
+Make sure your `.env` file has both variables set.
+
+### "Invalid username or password"
+
+- Check that your username matches `ADMIN_USERNAME` in `.env`
+- Regenerate your password hash if needed
+
+### Netlify CLI not found
+
+```bash
+npm install -g netlify-cli
+```

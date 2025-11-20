@@ -1,7 +1,5 @@
 import { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
-import { getDatabase } from "../../lib/mongodb";
 import { verifyPassword, generateToken } from "../../lib/auth";
-import { User } from "../../types/models";
 
 interface LoginRequest {
   username: string;
@@ -24,6 +22,7 @@ interface ErrorResponse {
 /**
  * POST /api/auth/login
  * Authenticate user and return JWT token
+ * Uses ADMIN_USERNAME and ADMIN_PASSWORD_HASH from environment variables
  */
 export const handler: Handler = async (
   event: HandlerEvent,
@@ -81,14 +80,30 @@ export const handler: Handler = async (
       };
     }
 
-    // Get database connection
-    const db = await getDatabase();
-    const usersCollection = db.collection<User>("users");
+    // Get admin credentials from environment
+    const adminUsername = process.env.ADMIN_USERNAME;
+    const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
 
-    // Find user by username
-    const user = await usersCollection.findOne({ username });
+    if (!adminUsername || !adminPasswordHash) {
+      console.error(
+        "Missing ADMIN_USERNAME or ADMIN_PASSWORD_HASH in environment"
+      );
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          error: {
+            code: "CONFIGURATION_ERROR",
+            message: "Server authentication is not configured",
+          },
+        } as ErrorResponse),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+    }
 
-    if (!user) {
+    // Check username
+    if (username !== adminUsername) {
       return {
         statusCode: 401,
         body: JSON.stringify({
@@ -104,7 +119,7 @@ export const handler: Handler = async (
     }
 
     // Verify password
-    const isPasswordValid = await verifyPassword(password, user.passwordHash);
+    const isPasswordValid = await verifyPassword(password, adminPasswordHash);
 
     if (!isPasswordValid) {
       return {
@@ -123,8 +138,8 @@ export const handler: Handler = async (
 
     // Generate JWT token
     const token = generateToken({
-      userId: user._id.toString(),
-      username: user.username,
+      userId: "admin",
+      username: adminUsername,
     });
 
     // Calculate expiration time (24 hours from now)
@@ -160,7 +175,7 @@ export const handler: Handler = async (
       };
     }
 
-    // Handle database errors
+    // Handle unexpected errors
     return {
       statusCode: 500,
       body: JSON.stringify({
