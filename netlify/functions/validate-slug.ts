@@ -1,4 +1,4 @@
-import { Handler, HandlerEvent } from "@netlify/functions";
+import { Handler, HandlerEvent, HandlerResponse } from "@netlify/functions";
 import { ObjectId } from "mongodb";
 import { getDatabase } from "../../lib/mongodb";
 import { Entry } from "../../types/models";
@@ -26,7 +26,7 @@ interface ValidateSlugResponse {
  * Check slug uniqueness in database with optional entry exclusion
  * Requirements: 10.4
  */
-const validateSlugHandler = async (event: HandlerEvent) => {
+const validateSlugHandler = async (event: HandlerEvent): Promise<HandlerResponse> => {
   // Only allow GET requests
   if (event.httpMethod !== "GET") {
     return {
@@ -39,7 +39,7 @@ const validateSlugHandler = async (event: HandlerEvent) => {
       } as ErrorResponse),
       headers: {
         "Content-Type": "application/json",
-        Allow: "GET",
+        "Allow": "GET",
       },
     };
   }

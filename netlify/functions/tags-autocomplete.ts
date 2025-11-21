@@ -1,4 +1,4 @@
-import { Handler, HandlerEvent } from "@netlify/functions";
+import { Handler, HandlerEvent, HandlerResponse } from "@netlify/functions";
 import { getDatabase } from "../../lib/mongodb";
 import { Tag } from "../../types/models";
 
@@ -21,7 +21,7 @@ interface TagAutocompleteResponse {
  * Returns matching tags sorted by usage count
  * Requirements: 9.1
  */
-export const handler: Handler = async (event: HandlerEvent) => {
+export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResponse> => {
   // Only allow GET requests
   if (event.httpMethod !== "GET") {
     return {
@@ -34,7 +34,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
       } as ErrorResponse),
       headers: {
         "Content-Type": "application/json",
-        Allow: "GET",
+        "Allow": "GET",
       },
     };
   }

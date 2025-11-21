@@ -1,4 +1,4 @@
-import { Handler, HandlerContext } from "@netlify/functions";
+import { Handler, HandlerContext, HandlerResponse } from "@netlify/functions";
 import { ObjectId } from "mongodb";
 import { getDatabase } from "../../lib/mongodb";
 import { withAuth, AuthenticatedEvent } from "../../lib/auth-middleware";
@@ -27,7 +27,7 @@ interface DeleteResponse {
 const deleteEntryHandler = async (
   event: AuthenticatedEvent,
   context: HandlerContext
-) => {
+): Promise<HandlerResponse> => {
   // Only allow DELETE requests
   if (event.httpMethod !== "DELETE") {
     return {

@@ -1,4 +1,9 @@
-import { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
+import {
+  Handler,
+  HandlerEvent,
+  HandlerContext,
+  HandlerResponse,
+} from "@netlify/functions";
 import { verifyPassword, generateToken } from "../../lib/auth";
 
 interface LoginRequest {
@@ -27,7 +32,7 @@ interface ErrorResponse {
 export const handler: Handler = async (
   event: HandlerEvent,
   context: HandlerContext
-) => {
+): Promise<HandlerResponse> => {
   // Only allow POST requests
   if (event.httpMethod !== "POST") {
     return {
@@ -40,7 +45,7 @@ export const handler: Handler = async (
       } as ErrorResponse),
       headers: {
         "Content-Type": "application/json",
-        Allow: "POST",
+        "Allow": "POST",
       },
     };
   }

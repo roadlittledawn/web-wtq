@@ -1,4 +1,4 @@
-import { Handler, HandlerContext } from "@netlify/functions";
+import { Handler, HandlerContext, HandlerResponse } from "@netlify/functions";
 import { ObjectId } from "mongodb";
 import { getDatabase } from "../../lib/mongodb";
 import { withAuth, AuthenticatedEvent } from "../../lib/auth-middleware";
@@ -22,7 +22,7 @@ interface ErrorResponse {
 const createEntryHandler = async (
   event: AuthenticatedEvent,
   context: HandlerContext
-) => {
+): Promise<HandlerResponse> => {
   // Only allow POST requests
   if (event.httpMethod !== "POST") {
     return {

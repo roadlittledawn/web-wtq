@@ -1,4 +1,4 @@
-import { Handler, HandlerEvent } from "@netlify/functions";
+import { Handler, HandlerEvent, HandlerResponse } from "@netlify/functions";
 import { getDatabase } from "../../lib/mongodb";
 import { Tag } from "../../types/models";
 
@@ -19,7 +19,7 @@ interface TagsResponse {
  * GET /api/tags
  * Retrieve all tags with usage counts
  */
-export const handler: Handler = async (event: HandlerEvent) => {
+export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResponse> => {
   // Only allow GET requests
   if (event.httpMethod !== "GET") {
     return {
@@ -32,7 +32,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
       } as ErrorResponse),
       headers: {
         "Content-Type": "application/json",
-        Allow: "GET",
+        "Allow": "GET",
       },
     };
   }
