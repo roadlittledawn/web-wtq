@@ -1,12 +1,33 @@
+"use client";
+
 import { QuoteEntry } from "@/types/models";
 import Link from "next/link";
 import AuthorImage from "./AuthorImage";
+import EditButton from "./EditButton";
+import { useState, useEffect } from "react";
 
 interface QuoteCardProps {
   entry: QuoteEntry;
 }
 
 export default function QuoteCard({ entry }: QuoteCardProps) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Check if user is authenticated
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const expirationTime = payload.exp * 1000;
+        const currentTime = Date.now();
+        setIsAuthenticated(currentTime < expirationTime);
+      } catch (error) {
+        setIsAuthenticated(false);
+      }
+    }
+  }, []);
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
       <div className="flex gap-4">
@@ -37,6 +58,13 @@ export default function QuoteCard({ entry }: QuoteCardProps) {
             <p className="mt-2 text-sm text-slate-600">{entry.notes}</p>
           )}
         </div>
+
+        {/* Edit Button */}
+        {isAuthenticated && (
+          <div className="flex-shrink-0">
+            <EditButton entryId={entry._id.toString()} />
+          </div>
+        )}
       </div>
 
       {/* Tags */}
