@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 
 const SALT_ROUNDS = 12;
 const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-for-development";
-const JWT_EXPIRATION = process.env.JWT_EXPIRATION || "24h";
+const JWT_EXPIRATION: string = process.env.JWT_EXPIRATION || "24h";
 
 /**
  * Hash a password using bcrypt with work factor 12
@@ -33,7 +33,9 @@ export async function verifyPassword(
  * @returns The signed JWT token
  */
 export function generateToken(payload: object): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
+  return jwt.sign(payload, JWT_SECRET, {
+    expiresIn: JWT_EXPIRATION as jwt.SignOptions["expiresIn"],
+  });
 }
 
 /**
