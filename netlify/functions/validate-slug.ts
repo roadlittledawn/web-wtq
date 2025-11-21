@@ -1,7 +1,6 @@
-import { Handler, HandlerContext } from "@netlify/functions";
+import { Handler, HandlerEvent } from "@netlify/functions";
 import { ObjectId } from "mongodb";
 import { getDatabase } from "../../lib/mongodb";
-import { withAuth, AuthenticatedEvent } from "../../lib/auth-middleware";
 import { Entry } from "../../types/models";
 
 interface ErrorResponse {
@@ -23,68 +22,36 @@ interface ValidateSlugResponse {
 }
 
 /**
- * POST /api/validate-slug
+ * GET /api/validate-slug
  * Check slug uniqueness in database with optional entry exclusion
  * Requirements: 10.4
  */
-const validateSlugHandler = async (
-  event: AuthenticatedEvent,
-  context: HandlerContext
-) => {
-  // Only allow POST requests
-  if (event.httpMethod !== "POST") {
+const validateSlugHandler = async (event: HandlerEvent) => {
+  // Only allow GET requests
+  if (event.httpMethod !== "GET") {
     return {
       statusCode: 405,
       body: JSON.stringify({
         error: {
           code: "METHOD_NOT_ALLOWED",
-          message: "Only POST requests are allowed",
+          message: "Only GET requests are allowed",
         },
       } as ErrorResponse),
       headers: {
         "Content-Type": "application/json",
-        Allow: "POST",
+        Allow: "GET",
       },
     };
   }
 
   try {
-    // Parse request body
-    if (!event.body) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          error: {
-            code: "MISSING_BODY",
-            message: "Request body is required",
-          },
-        } as ErrorResponse),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-    }
-
-    let requestData: ValidateSlugRequest;
-    try {
-      requestData = JSON.parse(event.body);
-    } catch (error) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          error: {
-            code: "INVALID_JSON",
-            message: "Request body must be valid JSON",
-          },
-        } as ErrorResponse),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-    }
+    // Parse query parameters
+    const params = event.queryStringParameters || {};
+    const slug = params.slug;
+    const excludeId = params.excludeId;
 
     // Validate required fields
-    if (!requestData.slug || typeof requestData.slug !== "string") {
+    if (!slug || typeof slug !== "string") {
       return {
         statusCode: 400,
         body: JSON.stringify({
@@ -100,7 +67,7 @@ const validateSlugHandler = async (
     }
 
     // Validate excludeId if provided
-    if (requestData.excludeId && !ObjectId.isValid(requestData.excludeId)) {
+    if (excludeId && !ObjectId.isValid(excludeId)) {
       return {
         statusCode: 400,
         body: JSON.stringify({
@@ -120,11 +87,11 @@ const validateSlugHandler = async (
     const entriesCollection = db.collection<Entry>("entries");
 
     // Build query to check slug uniqueness
-    const query: any = { slug: requestData.slug };
+    const query: any = { slug };
 
     // Exclude specific entry ID if provided (for update operations)
-    if (requestData.excludeId) {
-      query._id = { $ne: new ObjectId(requestData.excludeId) };
+    if (excludeId) {
+      query._id = { $ne: new ObjectId(excludeId) };
     }
 
     // Check if slug exists
@@ -135,7 +102,7 @@ const validateSlugHandler = async (
       statusCode: 200,
       body: JSON.stringify({
         isUnique: !existingEntry,
-        slug: requestData.slug,
+        slug,
       } as ValidateSlugResponse),
       headers: {
         "Content-Type": "application/json",
@@ -159,5 +126,5 @@ const validateSlugHandler = async (
   }
 };
 
-// Export handler wrapped with authentication middleware
-export const handler: Handler = withAuth(validateSlugHandler);
+// Export handler without authentication (read-only operation)
+export const handler: Handler = validateSlugHandler;
