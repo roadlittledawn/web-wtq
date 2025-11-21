@@ -81,7 +81,7 @@ export default function PhraseBrowser({
     const grouped: PhrasesByLetter = {};
 
     phrases.forEach((phrase) => {
-      const firstLetter = phrase.name.charAt(0).toUpperCase();
+      const firstLetter = phrase.body.charAt(0).toUpperCase();
       if (!grouped[firstLetter]) {
         grouped[firstLetter] = [];
       }
