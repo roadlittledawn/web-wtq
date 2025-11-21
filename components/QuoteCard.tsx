@@ -1,7 +1,6 @@
 "use client";
 
 import { QuoteEntry } from "@/types/models";
-import Link from "next/link";
 import AuthorImage from "./AuthorImage";
 import EditButton from "./EditButton";
 import { useState, useEffect } from "react";
@@ -38,12 +37,9 @@ export default function QuoteCard({ entry }: QuoteCardProps) {
 
         {/* Quote Content */}
         <div className="flex-1">
-          <Link
-            href={`/entries/${entry.slug}`}
-            className="text-xl font-semibold text-slate-800 hover:text-slate-600 block mb-2"
-          >
+          <h3 className="text-xl font-semibold text-slate-800 mb-2">
             {entry.name}
-          </Link>
+          </h3>
 
           <blockquote className="pl-4 border-l-4 border-slate-300 text-slate-700 italic mb-3">
             {entry.body}

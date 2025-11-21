@@ -1,7 +1,6 @@
 "use client";
 
 import { Entry } from "@/types/models";
-import Link from "next/link";
 import EditButton from "./EditButton";
 import { useState, useEffect } from "react";
 
@@ -33,12 +32,9 @@ export default function EntryCard({ entry }: EntryCardProps) {
         <div className="flex-1">
           {entry.type === "word" && (
             <>
-              <Link
-                href={`/entries/${entry.slug}`}
-                className="text-2xl font-bold text-slate-800 hover:text-slate-600"
-              >
+              <h3 className="text-2xl font-bold text-slate-800">
                 {entry.name}
-              </Link>
+              </h3>
               {entry.partOfSpeech && (
                 <span className="ml-2 text-sm text-slate-500 italic">
                   ({entry.partOfSpeech})
@@ -59,12 +55,9 @@ export default function EntryCard({ entry }: EntryCardProps) {
 
           {entry.type === "phrase" && (
             <>
-              <Link
-                href={`/entries/${entry.slug}`}
-                className="text-2xl font-bold text-slate-800 hover:text-slate-600"
-              >
+              <h3 className="text-2xl font-bold text-slate-800">
                 {entry.body}
-              </Link>
+              </h3>
               <p className="mt-2 text-slate-700">{entry.definition}</p>
               {entry.source && (
                 <p className="mt-2 text-sm text-slate-600">
@@ -79,12 +72,9 @@ export default function EntryCard({ entry }: EntryCardProps) {
 
           {entry.type === "quote" && (
             <>
-              <Link
-                href={`/entries/${entry.slug}`}
-                className="text-xl font-semibold text-slate-800 hover:text-slate-600"
-              >
+              <h3 className="text-xl font-semibold text-slate-800">
                 {entry.name}
-              </Link>
+              </h3>
               <blockquote className="mt-3 pl-4 border-l-4 border-slate-300 text-slate-700 italic">
                 {entry.body}
               </blockquote>
@@ -102,12 +92,9 @@ export default function EntryCard({ entry }: EntryCardProps) {
 
           {entry.type === "hypothetical" && (
             <>
-              <Link
-                href={`/entries/${entry.slug}`}
-                className="text-xl font-semibold text-slate-800 hover:text-slate-600 block mb-2"
-              >
+              <h3 className="text-xl font-semibold text-slate-800 mb-2">
                 Hypothetical
-              </Link>
+              </h3>
               <p className="text-slate-700">{entry.body}</p>
               {entry.source && (
                 <p className="mt-2 text-sm text-slate-600">
