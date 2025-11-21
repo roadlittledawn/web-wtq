@@ -22,6 +22,8 @@
         "npm:@vitejs/plugin-react@^4.2.1",
         "npm:autoprefixer@^10.0.1",
         "npm:bcrypt@^5.1.1",
+        "npm:csv-parse@^6.1.0",
+        "npm:dotenv@^16.4.5",
         "npm:eslint-config-next@^14.2.0",
         "npm:eslint@8",
         "npm:fast-check@^3.15.0",
@@ -34,6 +36,7 @@
         "npm:react-select@^5.8.0",
         "npm:react@^18.3.0",
         "npm:tailwindcss@^3.4.1",
+        "npm:tsx@^4.20.6",
         "npm:typescript@5",
         "npm:vitest@^1.2.0",
         "npm:zod@^3.22.4"
