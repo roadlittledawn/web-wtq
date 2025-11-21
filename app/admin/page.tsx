@@ -161,18 +161,23 @@ export default function AdminDashboard() {
             ) : (
               <div className="divide-y divide-dark-border">
                 {recentEntries.map((entry) => {
-                  const displayName =
-                    "name" in entry
+                  const displayName: string =
+                    "name" in entry && typeof entry.name === "string"
                       ? entry.name
-                      : "text" in entry
+                      : "text" in entry && typeof entry.text === "string"
                       ? entry.text
-                      : "body" in entry
+                      : "body" in entry && typeof entry.body === "string"
                       ? entry.body
                       : "Unknown";
-                  const displayDefinition =
-                    "definition" in entry ? entry.definition : undefined;
-                  const displayAuthor =
-                    "author" in entry ? entry.author : undefined;
+                  const displayDefinition: string | undefined =
+                    "definition" in entry &&
+                    typeof entry.definition === "string"
+                      ? entry.definition
+                      : undefined;
+                  const displayAuthor: string | undefined =
+                    "author" in entry && typeof entry.author === "string"
+                      ? entry.author
+                      : undefined;
 
                   return (
                     <Link
