@@ -85,9 +85,8 @@ export const handler: Handler = async (
     const filter: any = {};
 
     // Add text search if query is provided
-    // Per Requirement 7.1: search 'name' field for word entries,
-    // and 'body' field for phrase, quote, and hypothetical entries
-    // Note: Phrase entries have 'name' not 'body', so we search 'name' for phrases too
+    // Search 'name' field for word and quote entries,
+    // and 'body' field for phrase and hypothetical entries
     if (query) {
       const searchConditions: any[] = [];
 
@@ -97,13 +96,17 @@ export const handler: Handler = async (
         name: { $regex: query, $options: "i" },
       });
 
-      // For phrase entries: search in 'name' field (phrases have name, not body)
+      // For phrase entries: search in 'body' field
       searchConditions.push({
         type: "phrase",
-        name: { $regex: query, $options: "i" },
+        body: { $regex: query, $options: "i" },
       });
 
-      // For quote entries: search in 'body' field
+      // For quote entries: search in 'name' and 'body' fields
+      searchConditions.push({
+        type: "quote",
+        name: { $regex: query, $options: "i" },
+      });
       searchConditions.push({
         type: "quote",
         body: { $regex: query, $options: "i" },
