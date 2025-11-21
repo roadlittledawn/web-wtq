@@ -15,7 +15,7 @@ const baseEntrySchema = z.object({
 export const wordEntrySchema = baseEntrySchema.extend({
   type: z.literal("word"),
   name: z.string().min(1, "Name is required"),
-  definition: z.string().min(1, "Definition is required"),
+  definition: z.string().optional(),
   partOfSpeech: z.string().optional(),
   etymology: z.string().optional(),
   notes: z.string().optional(),
@@ -28,7 +28,7 @@ export const wordEntrySchema = baseEntrySchema.extend({
 export const phraseEntrySchema = baseEntrySchema.extend({
   type: z.literal("phrase"),
   body: z.string().min(1, "Phrase text is required"),
-  definition: z.string().min(1, "Definition is required"),
+  definition: z.string().optional(),
   source: z.string().optional(),
   notes: z.string().optional(),
 });
@@ -39,7 +39,7 @@ export const phraseEntrySchema = baseEntrySchema.extend({
  */
 export const quoteEntrySchema = baseEntrySchema.extend({
   type: z.literal("quote"),
-  name: z.string().min(1, "Name is required"),
+  name: z.string().optional(),
   body: z.string().min(1, "Body is required"),
   author: z.string().min(1, "Author is required"),
   source: z.string().optional(),

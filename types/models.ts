@@ -29,7 +29,7 @@ export interface BaseEntry {
 export interface WordEntry extends BaseEntry {
   type: "word";
   name: string;
-  definition: string;
+  definition?: string;
   partOfSpeech?: string;
   etymology?: string;
   notes?: string;
@@ -41,7 +41,7 @@ export interface WordEntry extends BaseEntry {
 export interface PhraseEntry extends BaseEntry {
   type: "phrase";
   body: string;
-  definition: string;
+  definition?: string;
   source?: string;
   notes?: string;
 }
@@ -51,7 +51,7 @@ export interface PhraseEntry extends BaseEntry {
  */
 export interface QuoteEntry extends BaseEntry {
   type: "quote";
-  name: string;
+  name?: string;
   body: string;
   author: string;
   source?: string;
