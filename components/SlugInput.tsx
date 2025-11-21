@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { generateSlug } from "@/lib/slug";
 
 interface SlugInputProps {
@@ -13,7 +13,7 @@ interface SlugInputProps {
 }
 
 /**
- * SlugInput component with auto-generation and uniqueness validation
+ * SlugInput component with manual generation and uniqueness validation
  * Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.6
  */
 export default function SlugInput({
@@ -26,16 +26,16 @@ export default function SlugInput({
 }: SlugInputProps) {
   const [isValidating, setIsValidating] = useState(false);
   const [validationError, setValidationError] = useState<string>("");
-  const [isManuallyEdited, setIsManuallyEdited] = useState(false);
 
-  // Auto-generate slug from sourceText when it changes
+  // Generate slug from sourceText when button is clicked
   // Requirements: 10.1, 10.2
-  useEffect(() => {
-    if (sourceText && !isManuallyEdited && !value) {
+  const handleGenerateSlug = () => {
+    if (sourceText) {
       const generatedSlug = generateSlug(sourceText);
       onChange(generatedSlug);
+      setValidationError("");
     }
-  }, [sourceText, isManuallyEdited, value, onChange]);
+  };
 
   // Validate slug uniqueness on blur
   // Requirement: 10.4
@@ -82,7 +82,6 @@ export default function SlugInput({
   // Requirement: 10.3
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    setIsManuallyEdited(true);
     setValidationError("");
     onChange(newValue);
   };
@@ -100,20 +99,31 @@ export default function SlugInput({
           (URL-friendly identifier)
         </span>
       </label>
-      <input
-        type="text"
-        id="slug"
-        value={value}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        disabled={disabled || isValidating}
-        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-          displayError
-            ? "border-red-300 focus:ring-red-500"
-            : "border-gray-300 focus:ring-blue-500"
-        } disabled:bg-gray-100 disabled:cursor-not-allowed`}
-        placeholder="auto-generated-from-name"
-      />
+      <div className="flex gap-2">
+        <input
+          type="text"
+          id="slug"
+          value={value}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          disabled={disabled || isValidating}
+          className={`flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+            displayError
+              ? "border-red-300 focus:ring-red-500"
+              : "border-gray-300 focus:ring-blue-500"
+          } disabled:bg-gray-100 disabled:cursor-not-allowed`}
+          placeholder="enter-slug-or-generate"
+        />
+        <button
+          type="button"
+          onClick={handleGenerateSlug}
+          disabled={disabled || isValidating || !sourceText}
+          className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:bg-gray-300 disabled:cursor-not-allowed whitespace-nowrap"
+          title="Generate slug from text"
+        >
+          Generate
+        </button>
+      </div>
       {isValidating && (
         <p className="text-sm text-gray-500 mt-1">Validating slug...</p>
       )}
