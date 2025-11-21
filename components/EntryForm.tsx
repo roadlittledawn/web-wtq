@@ -117,7 +117,9 @@ export default function EntryForm({
       {/* Requirement: 2.1 */}
       {entryType === "word" && (
         <WordForm
-          initialData={initialData}
+          initialData={
+            initialData as Partial<import("@/types/models").WordEntry>
+          }
           onSubmit={handleSubmit}
           onCancel={handleCancel}
         />
@@ -125,7 +127,9 @@ export default function EntryForm({
 
       {entryType === "phrase" && (
         <PhraseForm
-          initialData={initialData}
+          initialData={
+            initialData as Partial<import("@/types/models").PhraseEntry>
+          }
           onSubmit={handleSubmit}
           onCancel={handleCancel}
         />
@@ -133,7 +137,9 @@ export default function EntryForm({
 
       {entryType === "quote" && (
         <QuoteForm
-          initialData={initialData}
+          initialData={
+            initialData as Partial<import("@/types/models").QuoteEntry>
+          }
           onSubmit={handleSubmit}
           onCancel={handleCancel}
         />
@@ -141,7 +147,9 @@ export default function EntryForm({
 
       {entryType === "hypothetical" && (
         <HypotheticalForm
-          initialData={initialData}
+          initialData={
+            initialData as Partial<import("@/types/models").HypotheticalEntry>
+          }
           onSubmit={handleSubmit}
           onCancel={handleCancel}
         />

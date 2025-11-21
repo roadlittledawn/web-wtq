@@ -92,7 +92,10 @@ export default function EntryList({ entries, onDelete }: EntryListProps) {
           entry.body.substring(0, 50) + (entry.body.length > 50 ? "..." : "")
         );
       case "quote":
-        return entry.name;
+        return (
+          entry.name ||
+          entry.body.substring(0, 50) + (entry.body.length > 50 ? "..." : "")
+        );
       case "hypothetical":
         return (
           entry.body.substring(0, 50) + (entry.body.length > 50 ? "..." : "")
@@ -106,7 +109,7 @@ export default function EntryList({ entries, onDelete }: EntryListProps) {
     switch (entry.type) {
       case "word":
       case "phrase":
-        return entry.definition;
+        return entry.definition || "";
       case "quote":
         return entry.body;
       case "hypothetical":
