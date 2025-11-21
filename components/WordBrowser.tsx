@@ -5,6 +5,7 @@ import { WordEntry } from "@/types/models";
 import EntryCard from "./EntryCard";
 import LoadingSpinner from "./LoadingSpinner";
 import EndOfList from "./EndOfList";
+import Heading from "./Heading";
 
 interface WordBrowserProps {
   selectedLetter?: string;
@@ -135,8 +136,8 @@ export default function WordBrowser({
 
   if (error) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <p className="text-red-500">{error}</p>
+      <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6">
+        <p className="text-accent-pink">{error}</p>
       </div>
     );
   }
@@ -147,8 +148,8 @@ export default function WordBrowser({
 
   if (words.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <p className="text-slate-500">
+      <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6">
+        <p className="text-dark-text-secondary">
           {selectedLetter
             ? `No words found starting with "${selectedLetter}"`
             : "No words found"}
@@ -164,9 +165,12 @@ export default function WordBrowser({
     <div className="space-y-8">
       {letters.map((letter) => (
         <div key={letter} id={`letter-${letter}`}>
-          <h2 className="text-3xl font-bold text-slate-800 mb-4 pb-2 border-b-2 border-slate-300">
+          <Heading
+            level={2}
+            className="mb-4 pb-2 border-b-2 border-accent-pink"
+          >
             {letter}
-          </h2>
+          </Heading>
           <div className="space-y-4">
             {groupedWords[letter].map((word) => (
               <EntryCard key={word._id.toString()} entry={word} />

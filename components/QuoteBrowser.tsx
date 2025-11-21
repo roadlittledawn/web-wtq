@@ -5,6 +5,7 @@ import { QuoteEntry } from "@/types/models";
 import QuoteCard from "./QuoteCard";
 import LoadingSpinner from "./LoadingSpinner";
 import EndOfList from "./EndOfList";
+import Heading from "./Heading";
 
 interface QuoteBrowserProps {
   selectedTags?: string[];
@@ -131,8 +132,8 @@ export default function QuoteBrowser({ selectedTags = [] }: QuoteBrowserProps) {
 
   if (error) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <p className="text-red-500">{error}</p>
+      <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6">
+        <p className="text-accent-pink">{error}</p>
       </div>
     );
   }
@@ -143,8 +144,8 @@ export default function QuoteBrowser({ selectedTags = [] }: QuoteBrowserProps) {
 
   if (quotes.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <p className="text-slate-500">
+      <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6">
+        <p className="text-dark-text-secondary">
           {selectedTags.length > 0
             ? `No quotes found with the selected tags`
             : "No quotes found"}
@@ -160,9 +161,12 @@ export default function QuoteBrowser({ selectedTags = [] }: QuoteBrowserProps) {
     <div className="space-y-8">
       {authors.map((author) => (
         <div key={author} id={`author-${author.replace(/\s+/g, "-")}`}>
-          <h2 className="text-3xl font-bold text-slate-800 mb-4 pb-2 border-b-2 border-slate-300">
+          <Heading
+            level={2}
+            className="mb-4 pb-2 border-b-2 border-accent-purple"
+          >
             {author}
-          </h2>
+          </Heading>
           <div className="space-y-4">
             {groupedQuotes[author].map((quote) => (
               <QuoteCard key={quote._id.toString()} entry={quote} />

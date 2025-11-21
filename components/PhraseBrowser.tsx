@@ -5,6 +5,7 @@ import { PhraseEntry } from "@/types/models";
 import EntryCard from "./EntryCard";
 import LoadingSpinner from "./LoadingSpinner";
 import EndOfList from "./EndOfList";
+import Heading from "./Heading";
 
 interface PhraseBrowserProps {
   selectedTags?: string[];
@@ -133,8 +134,8 @@ export default function PhraseBrowser({
 
   if (error) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <p className="text-red-500">{error}</p>
+      <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6">
+        <p className="text-accent-pink">{error}</p>
       </div>
     );
   }
@@ -145,8 +146,8 @@ export default function PhraseBrowser({
 
   if (phrases.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <p className="text-slate-500">
+      <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6">
+        <p className="text-dark-text-secondary">
           {selectedTags.length > 0
             ? `No phrases found with the selected tags`
             : "No phrases found"}
@@ -162,9 +163,12 @@ export default function PhraseBrowser({
     <div className="space-y-8">
       {letters.map((letter) => (
         <div key={letter} id={`letter-${letter}`}>
-          <h2 className="text-3xl font-bold text-slate-800 mb-4 pb-2 border-b-2 border-slate-300">
+          <Heading
+            level={2}
+            className="mb-4 pb-2 border-b-2 border-accent-teal"
+          >
             {letter}
-          </h2>
+          </Heading>
           <div className="space-y-4">
             {groupedPhrases[letter].map((phrase) => (
               <EntryCard key={phrase._id.toString()} entry={phrase} />
