@@ -116,9 +116,9 @@ export default function WordForm({
       <div>
         <label
           htmlFor="name"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-dark-text mb-1"
         >
-          Name <span className="text-red-500">*</span>
+          Name <span className="text-accent-pink">*</span>
         </label>
         <input
           type="text"
@@ -127,14 +127,14 @@ export default function WordForm({
           value={formData.name}
           onChange={handleChange}
           disabled={isSubmitting}
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+          className={`w-full px-3 py-2 bg-dark-bg-secondary border-2 rounded-md focus:outline-none text-dark-text ${
             errors.name
-              ? "border-red-300 focus:ring-red-500"
-              : "border-gray-300 focus:ring-blue-500"
-          } disabled:bg-gray-100`}
+              ? "border-accent-pink focus:border-accent-pink"
+              : "border-dark-border focus:border-accent-teal"
+          } disabled:bg-dark-bg-tertiary disabled:text-dark-text-muted`}
         />
         {errors.name && (
-          <p className="text-sm text-red-600 mt-1">{errors.name}</p>
+          <p className="text-sm text-accent-pink mt-1">{errors.name}</p>
         )}
       </div>
 
@@ -150,9 +150,9 @@ export default function WordForm({
       <div>
         <label
           htmlFor="definition"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-dark-text mb-1"
         >
-          Definition <span className="text-red-500">*</span>
+          Definition <span className="text-accent-pink">*</span>
         </label>
         <textarea
           id="definition"
@@ -161,21 +161,21 @@ export default function WordForm({
           onChange={handleChange}
           disabled={isSubmitting}
           rows={3}
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+          className={`w-full px-3 py-2 bg-dark-bg-secondary border-2 rounded-md focus:outline-none text-dark-text ${
             errors.definition
-              ? "border-red-300 focus:ring-red-500"
-              : "border-gray-300 focus:ring-blue-500"
-          } disabled:bg-gray-100`}
+              ? "border-accent-pink focus:border-accent-pink"
+              : "border-dark-border focus:border-accent-teal"
+          } disabled:bg-dark-bg-tertiary disabled:text-dark-text-muted`}
         />
         {errors.definition && (
-          <p className="text-sm text-red-600 mt-1">{errors.definition}</p>
+          <p className="text-sm text-accent-pink mt-1">{errors.definition}</p>
         )}
       </div>
 
       <div>
         <label
           htmlFor="partOfSpeech"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-dark-text mb-1"
         >
           Part of Speech
         </label>
@@ -185,7 +185,7 @@ export default function WordForm({
           value={formData.partOfSpeech}
           onChange={handleChange}
           disabled={isSubmitting}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          className="w-full px-3 py-2 bg-dark-bg-secondary border-2 border-dark-border rounded-md focus:outline-none focus:border-accent-teal text-dark-text disabled:bg-dark-bg-tertiary disabled:text-dark-text-muted"
         >
           <option value="">Select part of speech</option>
           <option value="noun">noun</option>
@@ -200,7 +200,7 @@ export default function WordForm({
       <div>
         <label
           htmlFor="etymology"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-dark-text mb-1"
         >
           Etymology
         </label>
@@ -211,14 +211,14 @@ export default function WordForm({
           onChange={handleChange}
           disabled={isSubmitting}
           rows={2}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          className="w-full px-3 py-2 bg-dark-bg-secondary border-2 border-dark-border rounded-md focus:outline-none focus:border-accent-teal text-dark-text disabled:bg-dark-bg-tertiary disabled:text-dark-text-muted"
         />
       </div>
 
       <div>
         <label
           htmlFor="notes"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-dark-text mb-1"
         >
           Notes
         </label>
@@ -229,7 +229,7 @@ export default function WordForm({
           onChange={handleChange}
           disabled={isSubmitting}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          className="w-full px-3 py-2 bg-dark-bg-secondary border-2 border-dark-border rounded-md focus:outline-none focus:border-accent-teal text-dark-text disabled:bg-dark-bg-tertiary disabled:text-dark-text-muted"
         />
       </div>
 
@@ -243,7 +243,7 @@ export default function WordForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="px-6 py-2 bg-accent-teal text-dark-bg font-semibold rounded-md hover:bg-accent-teal-dark focus:outline-none focus:ring-2 focus:ring-accent-teal disabled:bg-dark-border disabled:cursor-not-allowed disabled:text-dark-text-muted"
         >
           {isSubmitting ? "Saving..." : "Save Word"}
         </button>
@@ -252,7 +252,7 @@ export default function WordForm({
             type="button"
             onClick={onCancel}
             disabled={isSubmitting}
-            className="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="px-6 py-2 bg-dark-bg-tertiary text-dark-text border-2 border-dark-border rounded-md hover:bg-dark-border focus:outline-none focus:ring-2 focus:ring-dark-border disabled:bg-dark-bg-tertiary disabled:cursor-not-allowed disabled:text-dark-text-muted"
           >
             Cancel
           </button>

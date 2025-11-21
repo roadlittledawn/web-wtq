@@ -102,14 +102,16 @@ export default function EntryForm({
   return (
     <div className="space-y-4">
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-sm text-red-600 whitespace-pre-wrap">{error}</p>
+        <div className="p-4 bg-accent-pink/10 border-2 border-accent-pink rounded-md">
+          <p className="text-sm text-accent-pink whitespace-pre-wrap">
+            {error}
+          </p>
         </div>
       )}
 
       {success && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-sm text-green-600">{success}</p>
+        <div className="p-4 bg-accent-teal/10 border-2 border-accent-teal rounded-md">
+          <p className="text-sm text-accent-teal">{success}</p>
         </div>
       )}
 

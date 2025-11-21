@@ -100,7 +100,7 @@ export default function TagInput({
     <div>
       <label
         htmlFor="tags"
-        className="block text-sm font-medium text-gray-700 mb-1"
+        className="block text-sm font-medium text-dark-text mb-1"
       >
         Tags
       </label>
@@ -120,40 +120,88 @@ export default function TagInput({
         styles={{
           control: (base, state) => ({
             ...base,
+            backgroundColor: "#161b22",
             borderColor: error
-              ? "#fca5a5"
+              ? "#ff006e"
               : state.isFocused
-              ? "#3b82f6"
-              : "#d1d5db",
-            boxShadow: state.isFocused
-              ? error
-                ? "0 0 0 1px #ef4444"
-                : "0 0 0 1px #3b82f6"
-              : "none",
+              ? "#06ffa5"
+              : "#30363d",
+            borderWidth: "2px",
+            boxShadow: "none",
+            color: "#e6edf3",
             "&:hover": {
-              borderColor: error ? "#fca5a5" : "#9ca3af",
+              borderColor: error ? "#ff006e" : "#06ffa5",
             },
+          }),
+          menu: (base) => ({
+            ...base,
+            backgroundColor: "#161b22",
+            border: "2px solid #30363d",
+          }),
+          option: (base, state) => ({
+            ...base,
+            backgroundColor: state.isFocused
+              ? "#21262d"
+              : state.isSelected
+              ? "#06ffa5"
+              : "#161b22",
+            color: state.isSelected ? "#0d1117" : "#e6edf3",
+            "&:hover": {
+              backgroundColor: "#21262d",
+            },
+          }),
+          input: (base) => ({
+            ...base,
+            color: "#e6edf3",
+          }),
+          placeholder: (base) => ({
+            ...base,
+            color: "#6e7681",
+          }),
+          singleValue: (base) => ({
+            ...base,
+            color: "#e6edf3",
           }),
           multiValue: (base) => ({
             ...base,
-            backgroundColor: "#dbeafe",
+            backgroundColor: "#06ffa5",
+            border: "1px solid #00d98a",
           }),
           multiValueLabel: (base) => ({
             ...base,
-            color: "#1e40af",
+            color: "#0d1117",
+            fontWeight: "600",
           }),
           multiValueRemove: (base) => ({
             ...base,
-            color: "#1e40af",
+            color: "#0d1117",
             "&:hover": {
-              backgroundColor: "#bfdbfe",
-              color: "#1e3a8a",
+              backgroundColor: "#00d98a",
+              color: "#0d1117",
+            },
+          }),
+          loadingIndicator: (base) => ({
+            ...base,
+            color: "#06ffa5",
+          }),
+          dropdownIndicator: (base) => ({
+            ...base,
+            color: "#8b949e",
+            "&:hover": {
+              color: "#06ffa5",
+            },
+          }),
+          clearIndicator: (base) => ({
+            ...base,
+            color: "#8b949e",
+            "&:hover": {
+              color: "#ff006e",
             },
           }),
         }}
       />
-      {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
-      <p className="text-sm text-gray-500 mt-1">
+      {error && <p className="text-sm text-accent-pink mt-1">{error}</p>}
+      <p className="text-sm text-dark-text-secondary mt-1">
         Select existing tags or type to create new ones
       </p>
     </div>

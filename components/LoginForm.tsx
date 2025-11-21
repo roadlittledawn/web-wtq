@@ -58,7 +58,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       <div>
         <label
           htmlFor="username"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-dark-text mb-1"
         >
           Username
         </label>
@@ -68,7 +68,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-dark-bg-secondary border-2 border-dark-border rounded-md focus:outline-none focus:border-accent-teal text-dark-text"
           disabled={isLoading}
         />
       </div>
@@ -76,7 +76,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       <div>
         <label
           htmlFor="password"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-dark-text mb-1"
         >
           Password
         </label>
@@ -86,21 +86,21 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-dark-bg-secondary border-2 border-dark-border rounded-md focus:outline-none focus:border-accent-teal text-dark-text"
           disabled={isLoading}
         />
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-sm text-red-600">{error}</p>
+        <div className="p-3 bg-accent-pink/10 border-2 border-accent-pink rounded-md">
+          <p className="text-sm text-accent-pink">{error}</p>
         </div>
       )}
 
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        className="w-full py-2 px-4 bg-accent-teal text-dark-bg font-semibold rounded-md hover:bg-accent-teal-dark focus:outline-none focus:ring-2 focus:ring-accent-teal disabled:bg-dark-border disabled:cursor-not-allowed disabled:text-dark-text-muted"
       >
         {isLoading ? "Logging in..." : "Log In"}
       </button>
