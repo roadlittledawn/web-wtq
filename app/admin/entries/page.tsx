@@ -82,21 +82,7 @@ export default function AdminEntriesPage() {
         }
 
         const data = await response.json();
-        let fetchedEntries = data.entries || data.results || [];
-
-        // Client-side sorting for fields that need special handling
-        if (sortBy === "name") {
-          fetchedEntries = fetchedEntries.sort((a: Entry, b: Entry) => {
-            const aValue =
-              a.type === "word" || a.type === "quote" ? a.name : a.body;
-            const bValue =
-              b.type === "word" || b.type === "quote" ? b.name : b.body;
-            const comparison = aValue.localeCompare(bValue);
-            return sortOrder === "asc" ? comparison : -comparison;
-          });
-        }
-
-        setEntries(fetchedEntries);
+        setEntries(data.entries || data.results || []);
         setTotal(data.total);
         setError(null);
       } catch (err) {
@@ -124,15 +110,17 @@ export default function AdminEntriesPage() {
     router.push(`/admin/entries${queryString ? `?${queryString}` : ""}`);
   };
 
-  // Handle column sort
+  // Handle column sort (only API-supported fields: name, author, createdAt, updatedAt)
   const handleSort = (column: string) => {
     if (sortBy === column) {
       // Toggle sort order
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
-      // New column, default to ascending
+      // New column, default to descending for dates, ascending for text
       setSortBy(column);
-      setSortOrder("asc");
+      setSortOrder(
+        column === "updatedAt" || column === "createdAt" ? "desc" : "asc"
+      );
     }
     setPage(1);
   };
@@ -328,12 +316,15 @@ export default function AdminEntriesPage() {
                       </th>
                       <th
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                        onClick={() => handleSort("slug")}
+                        onClick={() => handleSort("author")}
                       >
                         <div className="flex items-center">
-                          Slug
-                          <SortIcon column="slug" />
+                          Author
+                          <SortIcon column="author" />
                         </div>
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Slug
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Tags
@@ -366,6 +357,11 @@ export default function AdminEntriesPage() {
                         <td className="px-6 py-4">
                           <div className="text-sm text-gray-900 max-w-md truncate">
                             {getEntryTitle(entry)}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {entry.type === "quote" ? entry.author : "—"}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">

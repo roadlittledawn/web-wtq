@@ -105,6 +105,7 @@ export const handler: Handler = async (
       | undefined;
     const letter = params.letter?.toUpperCase();
     const sortBy = params.sortBy || "name"; // Default sort by name
+    const sortOrder = params.sortOrder === "asc" ? 1 : -1; // Default to descending
 
     // Parse tags parameter - can be a single tag or comma-separated list
     const tagsParam = params.tags;
