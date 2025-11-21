@@ -3,8 +3,8 @@
 /**
  * Generate bcrypt password hash for admin user
  *
- * Usage: npx tsx scripts/generate-password-hash.ts <password>
- * Example: npx tsx scripts/generate-password-hash.ts mySecurePassword123
+ * Usage: npx tsx scripts/generate-password-hash.ts '<password>'
+ * Example: npx tsx scripts/generate-password-hash.ts 'mySecurePassword123'
  */
 
 import bcrypt from "bcrypt";
