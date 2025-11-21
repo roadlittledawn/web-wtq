@@ -45,45 +45,45 @@ export default function TagFilter({
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <h3 className="text-lg font-semibold text-slate-800 mb-3">
+      <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-4">
+        <h3 className="text-lg font-semibold text-dark-text mb-3">
           Filter by Tags
         </h3>
-        <p className="text-slate-500 text-sm">Loading tags...</p>
+        <p className="text-dark-text-secondary text-sm">Loading tags...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <h3 className="text-lg font-semibold text-slate-800 mb-3">
+      <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-4">
+        <h3 className="text-lg font-semibold text-dark-text mb-3">
           Filter by Tags
         </h3>
-        <p className="text-red-500 text-sm">{error}</p>
+        <p className="text-accent-pink text-sm">{error}</p>
       </div>
     );
   }
 
   if (availableTags.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <h3 className="text-lg font-semibold text-slate-800 mb-3">
+      <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-4">
+        <h3 className="text-lg font-semibold text-dark-text mb-3">
           Filter by Tags
         </h3>
-        <p className="text-slate-500 text-sm">No tags available</p>
+        <p className="text-dark-text-secondary text-sm">No tags available</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
+    <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-semibold text-slate-800">Filter by Tags</h3>
+        <h3 className="text-lg font-semibold text-dark-text">Filter by Tags</h3>
         {selectedTags.length > 0 && (
           <button
             onClick={onClearFilters}
-            className="text-sm text-slate-600 hover:text-slate-800 underline"
+            className="text-sm text-accent-teal hover:text-accent-teal-dark underline"
           >
             Clear all
           </button>
@@ -91,14 +91,16 @@ export default function TagFilter({
       </div>
 
       {selectedTags.length > 0 && (
-        <div className="mb-4 pb-4 border-b border-slate-200">
-          <p className="text-sm text-slate-600 mb-2">Active filters:</p>
+        <div className="mb-4 pb-4 border-b border-dark-border">
+          <p className="text-sm text-dark-text-secondary mb-2">
+            Active filters:
+          </p>
           <div className="flex flex-wrap gap-2">
             {selectedTags.map((tag) => (
               <button
                 key={tag}
                 onClick={() => onTagToggle(tag)}
-                className="px-3 py-1 bg-slate-700 text-white text-sm rounded-full hover:bg-slate-600 transition-colors flex items-center gap-1"
+                className="px-3 py-1 bg-accent-pink text-white text-sm rounded-full hover:bg-accent-pink-light transition-colors flex items-center gap-1"
               >
                 {tag}
                 <span className="text-xs">✕</span>
@@ -117,8 +119,8 @@ export default function TagFilter({
               onClick={() => onTagToggle(tag.name)}
               className={`px-3 py-1 text-sm rounded-full transition-colors ${
                 isSelected
-                  ? "bg-slate-700 text-white hover:bg-slate-600"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  ? "bg-accent-teal text-dark-bg hover:bg-accent-teal-dark"
+                  : "bg-dark-bg-tertiary text-dark-text hover:bg-dark-border"
               }`}
             >
               {tag.name} ({tag.usageCount})

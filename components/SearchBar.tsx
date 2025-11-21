@@ -77,13 +77,13 @@ export default function SearchBar({
   const hasFilters = selectedType || selectedTags.length > 0;
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 space-y-4">
+    <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6 space-y-4">
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Search Input */}
         <div>
           <label
             htmlFor="search-query"
-            className="block text-sm font-medium text-slate-700 mb-2"
+            className="block text-sm font-medium text-dark-text mb-2"
           >
             Search
           </label>
@@ -93,7 +93,7 @@ export default function SearchBar({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search entries..."
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+            className="w-full px-4 py-2 bg-dark-bg-tertiary border-2 border-dark-border rounded-lg focus:outline-none focus:border-accent-teal text-dark-text placeholder:text-dark-text-muted"
           />
         </div>
 
@@ -101,7 +101,7 @@ export default function SearchBar({
         <div>
           <label
             htmlFor="entry-type"
-            className="block text-sm font-medium text-slate-700 mb-2"
+            className="block text-sm font-medium text-dark-text mb-2"
           >
             Entry Type
           </label>
@@ -109,7 +109,7 @@ export default function SearchBar({
             id="entry-type"
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent bg-white"
+            className="w-full px-4 py-2 bg-dark-bg-tertiary border-2 border-dark-border rounded-lg focus:outline-none focus:border-accent-teal text-dark-text"
           >
             <option value="">All Types</option>
             <option value="word">Words</option>
@@ -121,13 +121,15 @@ export default function SearchBar({
 
         {/* Tag Filter Selection */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
+          <label className="block text-sm font-medium text-dark-text mb-2">
             Filter by Tags
           </label>
           {isLoadingTags ? (
-            <p className="text-sm text-slate-500">Loading tags...</p>
+            <p className="text-sm text-dark-text-secondary">Loading tags...</p>
           ) : availableTags.length === 0 ? (
-            <p className="text-sm text-slate-500">No tags available</p>
+            <p className="text-sm text-dark-text-secondary">
+              No tags available
+            </p>
           ) : (
             <div className="flex flex-wrap gap-2">
               {availableTags.map((tag) => {
@@ -139,8 +141,8 @@ export default function SearchBar({
                     onClick={() => handleTagToggle(tag.name)}
                     className={`px-3 py-1 text-sm rounded-full transition-colors ${
                       isSelected
-                        ? "bg-slate-700 text-white hover:bg-slate-600"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                        ? "bg-accent-teal text-dark-bg hover:bg-accent-teal-dark"
+                        : "bg-dark-bg-tertiary text-dark-text hover:bg-dark-border"
                     }`}
                   >
                     {tag.name} ({tag.usageCount})
@@ -155,7 +157,7 @@ export default function SearchBar({
         <div className="flex gap-3">
           <button
             type="submit"
-            className="flex-1 bg-slate-700 text-white px-6 py-2 rounded-lg hover:bg-slate-600 transition-colors font-medium"
+            className="flex-1 bg-accent-teal text-dark-bg px-6 py-2 rounded-lg hover:bg-accent-teal-dark transition-colors font-semibold"
           >
             Search
           </button>
@@ -163,7 +165,7 @@ export default function SearchBar({
             <button
               type="button"
               onClick={handleClearFilters}
-              className="px-6 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-medium"
+              className="px-6 py-2 border-2 border-dark-border text-dark-text rounded-lg hover:bg-dark-border transition-colors font-medium"
             >
               Clear Filters
             </button>

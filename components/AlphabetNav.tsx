@@ -15,15 +15,15 @@ export default function AlphabetNav({
   );
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 sticky top-4 z-10">
+    <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-4 sticky top-4 z-10">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-semibold text-slate-800">
+        <h3 className="text-lg font-semibold text-dark-text">
           Browse by Letter
         </h3>
         {selectedLetter && (
           <button
             onClick={() => onLetterSelect(undefined)}
-            className="text-sm text-slate-600 hover:text-slate-800 underline"
+            className="text-sm text-accent-teal hover:text-accent-teal-dark underline"
           >
             Show all
           </button>
@@ -39,8 +39,8 @@ export default function AlphabetNav({
               onClick={() => onLetterSelect(isSelected ? undefined : letter)}
               className={`w-10 h-10 flex items-center justify-center rounded-md font-semibold transition-colors ${
                 isSelected
-                  ? "bg-slate-700 text-white hover:bg-slate-600"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  ? "bg-accent-pink text-white hover:bg-accent-pink-light"
+                  : "bg-dark-bg-tertiary text-dark-text hover:bg-dark-border"
               }`}
               aria-label={`Filter by letter ${letter}`}
               aria-pressed={isSelected}
@@ -52,10 +52,10 @@ export default function AlphabetNav({
       </div>
 
       {selectedLetter && (
-        <div className="mt-3 pt-3 border-t border-slate-200">
-          <p className="text-sm text-slate-600">
+        <div className="mt-3 pt-3 border-t border-dark-border">
+          <p className="text-sm text-dark-text-secondary">
             Showing words starting with{" "}
-            <span className="font-semibold text-slate-800">
+            <span className="font-semibold text-accent-teal">
               {selectedLetter}
             </span>
           </p>
