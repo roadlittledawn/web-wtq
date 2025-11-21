@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/AdminLayout";
 import { Entry } from "@/types/models";
 import Link from "next/link";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
-export default function AdminEntriesPage() {
+function AdminEntriesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -436,5 +436,13 @@ export default function AdminEntriesPage() {
         )}
       </div>
     </AdminLayout>
+  );
+}
+
+export default function AdminEntriesPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <AdminEntriesContent />
+    </Suspense>
   );
 }
