@@ -15,7 +15,7 @@ export default function EditButton({ entryId }: EditButtonProps) {
   return (
     <Link
       href={`/admin/entries/edit/${entryId}`}
-      className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+      className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-accent-teal text-dark-bg hover:bg-accent-teal-dark focus:outline-none focus:ring-2 focus:ring-accent-teal transition-colors"
       title="Edit entry"
     >
       <svg

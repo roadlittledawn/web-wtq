@@ -18,7 +18,7 @@ export default function AdminNav() {
   ];
 
   return (
-    <nav className="bg-white rounded-lg shadow mb-6">
+    <nav className="bg-dark-bg-secondary border border-dark-border rounded-lg mb-6">
       <div className="px-4 py-3">
         <ul className="flex flex-wrap gap-2">
           {navItems.map((item) => {
@@ -27,10 +27,10 @@ export default function AdminNav() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className={`inline-block px-4 py-2 rounded-md transition-colors ${
+                  className={`inline-block px-4 py-2 rounded-md transition-colors font-medium ${
                     isActive
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      ? "bg-accent-teal text-dark-bg"
+                      : "bg-dark-bg-tertiary text-dark-text hover:bg-dark-border"
                   }`}
                 >
                   {item.label}
