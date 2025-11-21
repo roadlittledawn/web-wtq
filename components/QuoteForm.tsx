@@ -13,7 +13,7 @@ interface QuoteFormProps {
 
 export interface QuoteFormData {
   type: "quote";
-  name: string;
+  name?: string;
   slug: string;
   body: string;
   author: string;
@@ -77,9 +77,6 @@ export default function QuoteForm({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
     if (!formData.slug.trim()) {
       newErrors.slug = "Slug is required";
     }
@@ -118,9 +115,9 @@ export default function QuoteForm({
           htmlFor="name"
           className="block text-sm font-medium text-gray-700 mb-1"
         >
-          Name <span className="text-red-500">*</span>
+          Name
           <span className="text-gray-500 text-xs ml-2">
-            (Title or identifier for this quote)
+            (Optional title or identifier for this quote)
           </span>
         </label>
         <input
@@ -130,21 +127,14 @@ export default function QuoteForm({
           value={formData.name}
           onChange={handleChange}
           disabled={isSubmitting}
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-            errors.name
-              ? "border-red-300 focus:ring-red-500"
-              : "border-gray-300 focus:ring-blue-500"
-          } disabled:bg-gray-100`}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
         />
-        {errors.name && (
-          <p className="text-sm text-red-600 mt-1">{errors.name}</p>
-        )}
       </div>
 
       <SlugInput
         value={formData.slug}
         onChange={handleSlugChange}
-        sourceText={formData.name}
+        sourceText={formData.name || formData.body}
         excludeId={initialData?._id?.toString()}
         error={errors.slug}
         disabled={isSubmitting}

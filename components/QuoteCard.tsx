@@ -37,9 +37,11 @@ export default function QuoteCard({ entry }: QuoteCardProps) {
 
         {/* Quote Content */}
         <div className="flex-1">
-          <h3 className="text-xl font-semibold text-slate-800 mb-2">
-            {entry.name}
-          </h3>
+          {entry.name && (
+            <h3 className="text-xl font-semibold text-slate-800 mb-2">
+              {entry.name}
+            </h3>
+          )}
 
           <blockquote className="pl-4 border-l-4 border-slate-300 text-slate-700 italic mb-3">
             {entry.body}
