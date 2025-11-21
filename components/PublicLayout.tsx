@@ -25,11 +25,14 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="bg-slate-800 text-white shadow-md">
+    <div className="min-h-screen flex flex-col bg-dark-bg">
+      <header className="bg-dark-bg-secondary border-b border-dark-border">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold hover:text-slate-200">
+            <Link
+              href="/"
+              className="text-2xl font-bold text-dark-text hover:text-accent-teal transition-colors"
+            >
               Clinton Lexicon
             </Link>
             <nav>
@@ -37,7 +40,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                 <li>
                   <Link
                     href="/words"
-                    className="hover:text-slate-200 transition-colors"
+                    className="text-dark-text hover:text-accent-teal transition-colors"
                   >
                     Words
                   </Link>
@@ -45,7 +48,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                 <li>
                   <Link
                     href="/phrases"
-                    className="hover:text-slate-200 transition-colors"
+                    className="text-dark-text hover:text-accent-teal transition-colors"
                   >
                     Phrases
                   </Link>
@@ -53,7 +56,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                 <li>
                   <Link
                     href="/quotes"
-                    className="hover:text-slate-200 transition-colors"
+                    className="text-dark-text hover:text-accent-teal transition-colors"
                   >
                     Quotes
                   </Link>
@@ -61,7 +64,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                 <li>
                   <Link
                     href="/hypotheticals"
-                    className="hover:text-slate-200 transition-colors"
+                    className="text-dark-text hover:text-accent-teal transition-colors"
                   >
                     Hypotheticals
                   </Link>
@@ -69,7 +72,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                 <li>
                   <Link
                     href="/search"
-                    className="hover:text-slate-200 transition-colors"
+                    className="text-dark-text hover:text-accent-teal transition-colors"
                     title="Search"
                   >
                     <svg
@@ -92,7 +95,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                   <li>
                     <Link
                       href="/admin"
-                      className="px-3 py-1 bg-blue-600 rounded hover:bg-blue-700 transition-colors"
+                      className="px-3 py-1 bg-accent-pink text-white rounded hover:bg-accent-pink-light transition-colors"
                     >
                       Admin
                     </Link>
@@ -106,9 +109,9 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
 
       <main className="flex-grow container mx-auto px-4 py-8">{children}</main>
 
-      <footer className="bg-slate-100 border-t border-slate-200">
+      <footer className="bg-dark-bg-secondary border-t border-dark-border">
         <div className="container mx-auto px-4 py-6">
-          <div className="text-center text-slate-600">
+          <div className="text-center text-dark-text-secondary">
             <p>
               &copy; {new Date().getFullYear()} Clinton Lexicon. All rights
               reserved.

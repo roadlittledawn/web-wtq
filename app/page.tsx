@@ -90,10 +90,10 @@ export default function Home() {
       <div className="max-w-6xl mx-auto">
         {/* Hero Section */}
         <div className="text-center py-20">
-          <h1 className="text-5xl md:text-6xl font-bold text-slate-800 mb-6">
+          <h1 className="text-5xl md:text-6xl font-bold text-dark-text mb-6">
             Clinton Lexicon
           </h1>
-          <p className="text-xl md:text-2xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-dark-text-secondary max-w-2xl mx-auto leading-relaxed">
             I'm Clinton and I'm a logophile. These are a few of my favorite
             things.
           </p>
@@ -101,42 +101,75 @@ export default function Home() {
 
         {/* Category Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-20">
-          {categories.map((category) => (
-            <Link
-              key={category.href}
-              href={category.href}
-              className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-8 border border-slate-200 hover:border-blue-400"
-            >
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 text-blue-600 group-hover:text-blue-700 transition-colors">
-                  {category.icon}
-                </div>
-                <div className="flex-1">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">
-                    {category.title}
-                  </h2>
-                  <p className="text-slate-600 leading-relaxed">
-                    {category.description}
-                  </p>
-                </div>
-                <div className="flex-shrink-0 text-slate-400 group-hover:text-blue-600 transition-colors">
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+          {categories.map((category, index) => {
+            const colors = [
+              {
+                border: "border-accent-pink",
+                icon: "text-accent-pink",
+                hover:
+                  "hover:border-accent-pink-light group-hover:text-accent-pink-light",
+              },
+              {
+                border: "border-accent-teal",
+                icon: "text-accent-teal",
+                hover:
+                  "hover:border-accent-teal-dark group-hover:text-accent-teal-dark",
+              },
+              {
+                border: "border-accent-purple",
+                icon: "text-accent-purple",
+                hover:
+                  "hover:border-accent-purple group-hover:text-accent-purple",
+              },
+              {
+                border: "border-accent-blue",
+                icon: "text-accent-blue",
+                hover: "hover:border-accent-blue group-hover:text-accent-blue",
+              },
+            ];
+            const color = colors[index];
+
+            return (
+              <Link
+                key={category.href}
+                href={category.href}
+                className={`group bg-dark-bg-secondary rounded-xl transition-all duration-300 p-8 border-2 ${color.border} ${color.hover}`}
+              >
+                <div className="flex items-start space-x-4">
+                  <div
+                    className={`flex-shrink-0 ${color.icon} transition-colors`}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
+                    {category.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-bold text-dark-text mb-2 transition-colors">
+                      {category.title}
+                    </h2>
+                    <p className="text-dark-text-secondary leading-relaxed">
+                      {category.description}
+                    </p>
+                  </div>
+                  <div
+                    className={`flex-shrink-0 ${color.icon} transition-colors`}
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </PublicLayout>
