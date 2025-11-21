@@ -26,6 +26,12 @@ export default function AdminEntriesPage() {
   );
   const [page, setPage] = useState(parseInt(searchParams.get("page") || "1"));
   const [limit] = useState(parseInt(searchParams.get("limit") || "25"));
+  const [sortBy, setSortBy] = useState(
+    searchParams.get("sortBy") || "updatedAt"
+  );
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
+    (searchParams.get("sortOrder") as "asc" | "desc") || "desc"
+  );
 
   // Fetch entries
   useEffect(() => {
@@ -37,7 +43,7 @@ export default function AdminEntriesPage() {
         const params = new URLSearchParams({
           limit: limit.toString(),
           offset: offset.toString(),
-          sortBy: "updatedAt",
+          sortBy: sortBy,
         });
 
         if (selectedType) {
@@ -76,7 +82,21 @@ export default function AdminEntriesPage() {
         }
 
         const data = await response.json();
-        setEntries(data.entries || data.results || []);
+        let fetchedEntries = data.entries || data.results || [];
+
+        // Client-side sorting for fields that need special handling
+        if (sortBy === "name") {
+          fetchedEntries = fetchedEntries.sort((a: Entry, b: Entry) => {
+            const aValue =
+              a.type === "word" || a.type === "quote" ? a.name : a.body;
+            const bValue =
+              b.type === "word" || b.type === "quote" ? b.name : b.body;
+            const comparison = aValue.localeCompare(bValue);
+            return sortOrder === "asc" ? comparison : -comparison;
+          });
+        }
+
+        setEntries(fetchedEntries);
         setTotal(data.total);
         setError(null);
       } catch (err) {
@@ -87,7 +107,7 @@ export default function AdminEntriesPage() {
     };
 
     fetchEntries();
-  }, [searchQuery, selectedType, selectedTags, page, limit]);
+  }, [searchQuery, selectedType, selectedTags, page, limit, sortBy, sortOrder]);
 
   // Update URL with search params
   const updateURL = () => {
@@ -97,9 +117,24 @@ export default function AdminEntriesPage() {
     if (selectedTags) params.set("tags", selectedTags);
     if (page > 1) params.set("page", page.toString());
     if (limit !== 25) params.set("limit", limit.toString());
+    if (sortBy !== "updatedAt") params.set("sortBy", sortBy);
+    if (sortOrder !== "desc") params.set("sortOrder", sortOrder);
 
     const queryString = params.toString();
     router.push(`/admin/entries${queryString ? `?${queryString}` : ""}`);
+  };
+
+  // Handle column sort
+  const handleSort = (column: string) => {
+    if (sortBy === column) {
+      // Toggle sort order
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      // New column, default to ascending
+      setSortBy(column);
+      setSortOrder("asc");
+    }
+    setPage(1);
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -112,8 +147,60 @@ export default function AdminEntriesPage() {
     setSearchQuery("");
     setSelectedType("");
     setSelectedTags("");
+    setSortBy("updatedAt");
+    setSortOrder("desc");
     setPage(1);
     router.push("/admin/entries");
+  };
+
+  // Sort icon component
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortBy !== column) {
+      return (
+        <svg
+          className="w-4 h-4 ml-1 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+          />
+        </svg>
+      );
+    }
+    return sortOrder === "asc" ? (
+      <svg
+        className="w-4 h-4 ml-1 text-blue-600"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M5 15l7-7 7 7"
+        />
+      </svg>
+    ) : (
+      <svg
+        className="w-4 h-4 ml-1 text-blue-600"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M19 9l-7 7-7-7"
+        />
+      </svg>
+    );
   };
 
   const totalPages = Math.ceil(total / limit);
@@ -230,17 +317,35 @@ export default function AdminEntriesPage() {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Type
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Title
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleSort("name")}
+                      >
+                        <div className="flex items-center">
+                          Title
+                          <SortIcon column="name" />
+                        </div>
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Slug
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleSort("slug")}
+                      >
+                        <div className="flex items-center">
+                          Slug
+                          <SortIcon column="slug" />
+                        </div>
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Tags
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Updated
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleSort("updatedAt")}
+                      >
+                        <div className="flex items-center">
+                          Updated
+                          <SortIcon column="updatedAt" />
+                        </div>
                       </th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
