@@ -69,9 +69,11 @@ export default function EditEntryPage() {
     return (
       <AdminLayout>
         <AdminNav />
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-600">{error || "Entry not found"}</p>
+        <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6">
+          <div className="p-4 bg-accent-pink/10 border-2 border-accent-pink rounded-md">
+            <p className="text-sm text-accent-pink">
+              {error || "Entry not found"}
+            </p>
           </div>
         </div>
       </AdminLayout>
@@ -81,8 +83,8 @@ export default function EditEntryPage() {
   return (
     <AdminLayout>
       <AdminNav />
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-2xl font-semibold mb-6">
+      <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6">
+        <h2 className="text-2xl font-semibold text-dark-text mb-6">
           Edit {entry.type.charAt(0).toUpperCase() + entry.type.slice(1)} Entry
         </h2>
         {/* Pre-populate EntryForm with existing data */}

@@ -13,8 +13,8 @@ export default function CreateHypotheticalPage() {
   return (
     <AdminLayout>
       <AdminNav />
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-2xl font-semibold mb-6">
+      <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6">
+        <h2 className="text-2xl font-semibold text-dark-text mb-6">
           Create Hypothetical Entry
         </h2>
         <EntryForm entryType="hypothetical" mode="create" />
