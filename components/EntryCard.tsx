@@ -27,82 +27,100 @@ export default function EntryCard({ entry }: EntryCardProps) {
   }, []);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+    <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6 hover:border-accent-teal transition-all">
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
           {entry.type === "word" && (
             <>
-              <h3 className="text-2xl font-bold text-slate-800">
+              <h3 className="text-2xl font-bold text-dark-text">
                 {entry.name}
               </h3>
               {entry.partOfSpeech && (
-                <span className="ml-2 text-sm text-slate-500 italic">
+                <span className="ml-2 text-sm text-accent-pink italic">
                   ({entry.partOfSpeech})
                 </span>
               )}
-              <p className="mt-2 text-slate-700">{entry.definition}</p>
+              <p className="mt-2 text-dark-text">{entry.definition}</p>
               {entry.etymology && (
-                <p className="mt-2 text-sm text-slate-600">
-                  <span className="font-semibold">Etymology:</span>{" "}
+                <p className="mt-2 text-sm text-dark-text-secondary">
+                  <span className="font-semibold text-accent-teal">
+                    Etymology:
+                  </span>{" "}
                   {entry.etymology}
                 </p>
               )}
               {entry.notes && (
-                <p className="mt-2 text-sm text-slate-600">{entry.notes}</p>
+                <p className="mt-2 text-sm text-dark-text-secondary">
+                  {entry.notes}
+                </p>
               )}
             </>
           )}
 
           {entry.type === "phrase" && (
             <>
-              <h3 className="text-2xl font-bold text-slate-800">
+              <h3 className="text-2xl font-bold text-dark-text">
                 {entry.body}
               </h3>
-              <p className="mt-2 text-slate-700">{entry.definition}</p>
+              <p className="mt-2 text-dark-text">{entry.definition}</p>
               {entry.source && (
-                <p className="mt-2 text-sm text-slate-600">
-                  <span className="font-semibold">Source:</span> {entry.source}
+                <p className="mt-2 text-sm text-dark-text-secondary">
+                  <span className="font-semibold text-accent-teal">
+                    Source:
+                  </span>{" "}
+                  {entry.source}
                 </p>
               )}
               {entry.notes && (
-                <p className="mt-2 text-sm text-slate-600">{entry.notes}</p>
+                <p className="mt-2 text-sm text-dark-text-secondary">
+                  {entry.notes}
+                </p>
               )}
             </>
           )}
 
           {entry.type === "quote" && (
             <>
-              <h3 className="text-xl font-semibold text-slate-800">
+              <h3 className="text-xl font-semibold text-dark-text">
                 {entry.name}
               </h3>
-              <blockquote className="mt-3 pl-4 border-l-4 border-slate-300 text-slate-700 italic">
+              <blockquote className="mt-3 pl-4 border-l-4 border-accent-pink text-dark-text italic">
                 {entry.body}
               </blockquote>
-              <p className="mt-2 text-slate-600">
-                <span className="font-semibold">— {entry.author}</span>
+              <p className="mt-2 text-dark-text-secondary">
+                <span className="font-semibold text-accent-teal">
+                  — {entry.author}
+                </span>
                 {entry.source && (
                   <span className="text-sm"> ({entry.source})</span>
                 )}
               </p>
               {entry.notes && (
-                <p className="mt-2 text-sm text-slate-600">{entry.notes}</p>
+                <p className="mt-2 text-sm text-dark-text-secondary">
+                  {entry.notes}
+                </p>
               )}
             </>
           )}
 
           {entry.type === "hypothetical" && (
             <>
-              <h3 className="text-xl font-semibold text-slate-800 mb-2">
+              <h3 className="text-xl font-semibold text-dark-text mb-2">
                 Hypothetical
               </h3>
-              <p className="text-slate-700">{entry.body}</p>
+              <p className="text-dark-text">{entry.body}</p>
               {entry.source && (
-                <p className="mt-2 text-sm text-slate-600">
-                  <span className="font-semibold">Source:</span> {entry.source}
+                <p className="mt-2 text-sm text-dark-text-secondary">
+                  <span className="font-semibold text-accent-teal">
+                    Source:
+                  </span>{" "}
+                  {entry.source}
                 </p>
               )}
               {entry.notes && (
-                <p className="mt-2 text-sm text-slate-600">{entry.notes}</p>
+                <p className="mt-2 text-sm text-dark-text-secondary">
+                  {entry.notes}
+                </p>
               )}
             </>
           )}
@@ -115,11 +133,11 @@ export default function EntryCard({ entry }: EntryCardProps) {
       </div>
 
       {entry.tags && entry.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-200">
+        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-dark-border">
           {entry.tags.map((tag) => (
             <span
               key={tag}
-              className="px-3 py-1 bg-slate-100 text-slate-700 text-sm rounded-full hover:bg-slate-200 transition-colors"
+              className="px-3 py-1 bg-dark-bg-tertiary border border-accent-teal text-accent-teal text-sm rounded-full hover:bg-accent-teal hover:text-dark-bg transition-colors"
             >
               {tag}
             </span>

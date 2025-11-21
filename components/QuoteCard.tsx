@@ -28,7 +28,7 @@ export default function QuoteCard({ entry }: QuoteCardProps) {
   }, []);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+    <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6 hover:border-accent-purple transition-all">
       <div className="flex gap-4">
         {/* Author Image */}
         <div className="flex-shrink-0">
@@ -38,22 +38,26 @@ export default function QuoteCard({ entry }: QuoteCardProps) {
         {/* Quote Content */}
         <div className="flex-1">
           {entry.name && (
-            <h3 className="text-xl font-semibold text-slate-800 mb-2">
+            <h3 className="text-xl font-semibold text-dark-text mb-2">
               {entry.name}
             </h3>
           )}
 
-          <blockquote className="pl-4 border-l-4 border-slate-300 text-slate-700 italic mb-3">
+          <blockquote className="pl-4 border-l-4 border-accent-purple text-dark-text italic mb-3">
             {entry.body}
           </blockquote>
 
-          <p className="text-slate-600">
-            <span className="font-semibold">— {entry.author}</span>
+          <p className="text-dark-text-secondary">
+            <span className="font-semibold text-accent-teal">
+              — {entry.author}
+            </span>
             {entry.source && <span className="text-sm"> ({entry.source})</span>}
           </p>
 
           {entry.notes && (
-            <p className="mt-2 text-sm text-slate-600">{entry.notes}</p>
+            <p className="mt-2 text-sm text-dark-text-secondary">
+              {entry.notes}
+            </p>
           )}
         </div>
 
@@ -67,11 +71,11 @@ export default function QuoteCard({ entry }: QuoteCardProps) {
 
       {/* Tags */}
       {entry.tags && entry.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-200">
+        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-dark-border">
           {entry.tags.map((tag) => (
             <span
               key={tag}
-              className="px-3 py-1 bg-slate-100 text-slate-700 text-sm rounded-full hover:bg-slate-200 transition-colors"
+              className="px-3 py-1 bg-dark-bg-tertiary border border-accent-purple text-accent-purple text-sm rounded-full hover:bg-accent-purple hover:text-dark-bg transition-colors"
             >
               {tag}
             </span>
