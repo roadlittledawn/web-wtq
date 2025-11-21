@@ -46,7 +46,9 @@ export default function WordForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -177,16 +179,22 @@ export default function WordForm({
         >
           Part of Speech
         </label>
-        <input
-          type="text"
+        <select
           id="partOfSpeech"
           name="partOfSpeech"
           value={formData.partOfSpeech}
           onChange={handleChange}
           disabled={isSubmitting}
-          placeholder="e.g., noun, verb, adjective"
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-        />
+        >
+          <option value="">Select part of speech</option>
+          <option value="noun">noun</option>
+          <option value="pronoun">pronoun</option>
+          <option value="verb">verb</option>
+          <option value="adjective">adjective</option>
+          <option value="adverb">adverb</option>
+          <option value="interjection">interjection</option>
+        </select>
       </div>
 
       <div>
