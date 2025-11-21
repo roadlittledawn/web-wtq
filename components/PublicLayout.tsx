@@ -1,10 +1,29 @@
+"use client";
+
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 interface PublicLayoutProps {
   children: React.ReactNode;
 }
 
 export default function PublicLayout({ children }: PublicLayoutProps) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const expirationTime = payload.exp * 1000;
+        const currentTime = Date.now();
+        setIsAuthenticated(currentTime < expirationTime);
+      } catch (error) {
+        setIsAuthenticated(false);
+      }
+    }
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-slate-800 text-white shadow-md">
@@ -14,7 +33,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
               Clinton Lexicon
             </Link>
             <nav>
-              <ul className="flex space-x-6">
+              <ul className="flex items-center space-x-6">
                 <li>
                   <Link
                     href="/words"
@@ -51,10 +70,34 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                   <Link
                     href="/search"
                     className="hover:text-slate-200 transition-colors"
+                    title="Search"
                   >
-                    Search
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
                   </Link>
                 </li>
+                {isAuthenticated && (
+                  <li>
+                    <Link
+                      href="/admin"
+                      className="px-3 py-1 bg-blue-600 rounded hover:bg-blue-700 transition-colors"
+                    >
+                      Admin
+                    </Link>
+                  </li>
+                )}
               </ul>
             </nav>
           </div>
