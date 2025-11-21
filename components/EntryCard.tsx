@@ -41,7 +41,7 @@ export default function EntryCard({ entry }: EntryCardProps) {
               href={`/entries/${entry.slug}`}
               className="text-2xl font-bold text-slate-800 hover:text-slate-600"
             >
-              {entry.name}
+              {entry.body}
             </Link>
             <p className="mt-2 text-slate-700">{entry.definition}</p>
             {entry.source && (
