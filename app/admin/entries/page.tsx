@@ -146,7 +146,7 @@ function AdminEntriesContent() {
     if (sortBy !== column) {
       return (
         <svg
-          className="w-4 h-4 ml-1 text-gray-400"
+          className="w-4 h-4 ml-1 text-dark-text-muted"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -162,7 +162,7 @@ function AdminEntriesContent() {
     }
     return sortOrder === "asc" ? (
       <svg
-        className="w-4 h-4 ml-1 text-blue-600"
+        className="w-4 h-4 ml-1 text-accent-teal"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -176,7 +176,7 @@ function AdminEntriesContent() {
       </svg>
     ) : (
       <svg
-        className="w-4 h-4 ml-1 text-blue-600"
+        className="w-4 h-4 ml-1 text-accent-teal"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -209,18 +209,18 @@ function AdminEntriesContent() {
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-slate-800">Manage Entries</h1>
-          <div className="text-sm text-slate-600">
+          <h1 className="text-3xl font-bold text-dark-text">Manage Entries</h1>
+          <div className="text-sm text-dark-text-secondary">
             Total: {total} {total === 1 ? "entry" : "entries"}
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6">
           <form onSubmit={handleSearch} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="md:col-span-3">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-dark-text mb-1">
                   Search
                 </label>
                 <input
@@ -228,18 +228,18 @@ function AdminEntriesContent() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search entries..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-dark-bg-tertiary border-2 border-dark-border rounded-md focus:outline-none focus:border-accent-teal text-dark-text placeholder:text-dark-text-muted"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-dark-text mb-1">
                   Type
                 </label>
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-dark-bg-tertiary border-2 border-dark-border rounded-md focus:outline-none focus:border-accent-teal text-dark-text"
                 >
                   <option value="">All Types</option>
                   <option value="word">Word</option>
@@ -250,7 +250,7 @@ function AdminEntriesContent() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-dark-text mb-1">
                   Tags (comma-separated)
                 </label>
                 <input
@@ -258,21 +258,21 @@ function AdminEntriesContent() {
                   value={selectedTags}
                   onChange={(e) => setSelectedTags(e.target.value)}
                   placeholder="tag1, tag2"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-dark-bg-tertiary border-2 border-dark-border rounded-md focus:outline-none focus:border-accent-teal text-dark-text placeholder:text-dark-text-muted"
                 />
               </div>
 
               <div className="flex items-end gap-2">
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-4 py-2 bg-accent-teal text-dark-bg font-semibold rounded-md hover:bg-accent-teal-dark focus:outline-none focus:ring-2 focus:ring-accent-teal"
                 >
                   Search
                 </button>
                 <button
                   type="button"
                   onClick={handleClearFilters}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  className="px-4 py-2 bg-dark-bg-tertiary border-2 border-dark-border text-dark-text rounded-md hover:bg-dark-border focus:outline-none focus:ring-2 focus:ring-dark-border"
                 >
                   Clear
                 </button>
@@ -283,30 +283,30 @@ function AdminEntriesContent() {
 
         {/* Results */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-600">{error}</p>
+          <div className="bg-accent-pink/10 border-2 border-accent-pink rounded-lg p-4">
+            <p className="text-accent-pink">{error}</p>
           </div>
         )}
 
         {isLoading ? (
           <LoadingSpinner />
         ) : entries.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <p className="text-slate-600">No entries found</p>
+          <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6 text-center">
+            <p className="text-dark-text-secondary">No entries found</p>
           </div>
         ) : (
           <>
             {/* Table */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-dark-border">
+                  <thead className="bg-dark-bg-tertiary">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-dark-text-secondary uppercase tracking-wider">
                         Type
                       </th>
                       <th
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                        className="px-6 py-3 text-left text-xs font-medium text-dark-text-secondary uppercase tracking-wider cursor-pointer hover:bg-dark-border"
                         onClick={() => handleSort("name")}
                       >
                         <div className="flex items-center">
@@ -315,7 +315,7 @@ function AdminEntriesContent() {
                         </div>
                       </th>
                       <th
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                        className="px-6 py-3 text-left text-xs font-medium text-dark-text-secondary uppercase tracking-wider cursor-pointer hover:bg-dark-border"
                         onClick={() => handleSort("author")}
                       >
                         <div className="flex items-center">
@@ -323,14 +323,11 @@ function AdminEntriesContent() {
                           <SortIcon column="author" />
                         </div>
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Slug
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-dark-text-secondary uppercase tracking-wider">
                         Tags
                       </th>
                       <th
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                        className="px-6 py-3 text-left text-xs font-medium text-dark-text-secondary uppercase tracking-wider cursor-pointer hover:bg-dark-border"
                         onClick={() => handleSort("updatedAt")}
                       >
                         <div className="flex items-center">
@@ -338,71 +335,75 @@ function AdminEntriesContent() {
                           <SortIcon column="updatedAt" />
                         </div>
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-right text-xs font-medium text-dark-text-secondary uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {entries.map((entry) => (
-                      <tr
-                        key={entry._id.toString()}
-                        className="hover:bg-gray-50"
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 capitalize">
-                            {entry.type}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-gray-900 max-w-md truncate">
-                            {getEntryTitle(entry)}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
-                            {entry.type === "quote" ? entry.author : "—"}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <Link
-                            href={`/entries/${entry.slug}`}
-                            target="_blank"
-                            className="text-sm text-blue-600 hover:text-blue-800"
-                          >
-                            {entry.slug}
-                          </Link>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex flex-wrap gap-1">
-                            {entry.tags.slice(0, 3).map((tag) => (
-                              <span
-                                key={tag}
-                                className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                            {entry.tags.length > 3 && (
-                              <span className="px-2 py-1 text-xs text-gray-500">
-                                +{entry.tags.length - 3}
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(entry.updatedAt).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <Link
-                            href={`/admin/entries/edit/${entry._id.toString()}`}
-                            className="text-blue-600 hover:text-blue-900"
-                          >
-                            Edit
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
+                  <tbody className="bg-dark-bg-secondary divide-y divide-dark-border">
+                    {entries.map((entry) => {
+                      const typeColors = {
+                        word: "bg-accent-pink/20 text-accent-pink",
+                        phrase: "bg-accent-teal/20 text-accent-teal",
+                        quote: "bg-accent-purple/20 text-accent-purple",
+                        hypothetical: "bg-accent-blue/20 text-accent-blue",
+                      };
+
+                      return (
+                        <tr
+                          key={entry._id.toString()}
+                          className="hover:bg-dark-bg-tertiary"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2 py-1 text-xs font-semibold rounded-full capitalize ${
+                                typeColors[entry.type]
+                              }`}
+                            >
+                              {entry.type}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-dark-text max-w-md truncate">
+                              {getEntryTitle(entry)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-dark-text">
+                              {entry.type === "quote" ? entry.author : "—"}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex flex-wrap gap-1">
+                              {entry.tags.slice(0, 3).map((tag) => (
+                                <span
+                                  key={tag}
+                                  className="px-2 py-1 text-xs bg-dark-bg-tertiary border border-dark-border text-dark-text-secondary rounded"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                              {entry.tags.length > 3 && (
+                                <span className="px-2 py-1 text-xs text-dark-text-muted">
+                                  +{entry.tags.length - 3}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-text-secondary">
+                            {new Date(entry.updatedAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <Link
+                              href={`/admin/entries/edit/${entry._id.toString()}`}
+                              className="text-accent-teal hover:text-accent-teal-dark"
+                            >
+                              Edit
+                            </Link>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -410,22 +411,22 @@ function AdminEntriesContent() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-between items-center bg-white rounded-lg shadow-md p-4">
-                <div className="text-sm text-gray-600">
+              <div className="flex justify-between items-center bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-4">
+                <div className="text-sm text-dark-text-secondary">
                   Page {page} of {totalPages}
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page === 1}
-                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-dark-bg-tertiary border-2 border-dark-border text-dark-text rounded-md hover:bg-dark-border disabled:bg-dark-bg-tertiary disabled:text-dark-text-muted disabled:cursor-not-allowed"
                   >
                     Previous
                   </button>
                   <button
                     onClick={() => setPage(Math.min(totalPages, page + 1))}
                     disabled={page === totalPages}
-                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-dark-bg-tertiary border-2 border-dark-border text-dark-text rounded-md hover:bg-dark-border disabled:bg-dark-bg-tertiary disabled:text-dark-text-muted disabled:cursor-not-allowed"
                   >
                     Next
                   </button>
