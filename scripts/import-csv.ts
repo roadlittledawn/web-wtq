@@ -243,10 +243,11 @@ async function importCSV(options: ImportOptions): Promise<void> {
       (slug, index) => slugs.indexOf(slug) !== index
     );
     if (duplicateSlugs.length > 0) {
+      const uniqueDuplicates = Array.from(new Set(duplicateSlugs));
       console.warn(
-        `\n⚠️  Warning: Duplicate slugs in import: ${[
-          ...new Set(duplicateSlugs),
-        ].join(", ")}`
+        `\n⚠️  Warning: Duplicate slugs in import: ${uniqueDuplicates.join(
+          ", "
+        )}`
       );
     }
 
@@ -300,7 +301,7 @@ async function importCSV(options: ImportOptions): Promise<void> {
       console.log(`✅ Successfully imported ${result.insertedCount} entries!`);
 
       // Update tag usage counts
-      const allTags = [...new Set(entries.flatMap((e) => e.tags))];
+      const allTags = Array.from(new Set(entries.flatMap((e) => e.tags)));
       if (allTags.length > 0) {
         const tagCollection = db.collection("tags");
         for (const tagName of allTags) {
