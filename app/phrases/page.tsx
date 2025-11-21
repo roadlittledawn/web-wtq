@@ -4,6 +4,7 @@ import { useState } from "react";
 import PhraseBrowser from "@/components/PhraseBrowser";
 import TagFilter from "@/components/TagFilter";
 import PublicLayout from "@/components/PublicLayout";
+import Heading from "@/components/Heading";
 
 export default function PhrasesPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -21,7 +22,9 @@ export default function PhrasesPage() {
   return (
     <PublicLayout>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-slate-800 mb-8">Phrases</h1>
+        <Heading level={1} className="mb-8">
+          Phrases
+        </Heading>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Tag Filter - Sidebar on large screens */}

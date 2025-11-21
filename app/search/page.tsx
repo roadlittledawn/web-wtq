@@ -5,6 +5,7 @@ import PublicLayout from "@/components/PublicLayout";
 import SearchBar from "@/components/SearchBar";
 import SearchResults from "@/components/SearchResults";
 import FilterPanel from "@/components/FilterPanel";
+import Heading from "@/components/Heading";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -44,8 +45,10 @@ export default function SearchPage() {
     <PublicLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         <div>
-          <h1 className="text-4xl font-bold text-slate-800 mb-2">Search</h1>
-          <p className="text-slate-600">
+          <Heading level={1} className="mb-2">
+            Search
+          </Heading>
+          <p className="text-dark-text-secondary">
             Search across all words, phrases, quotes, and hypotheticals
           </p>
         </div>
@@ -74,8 +77,8 @@ export default function SearchPage() {
 
         {/* Initial State Message */}
         {!hasSearched && (
-          <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <p className="text-slate-600">
+          <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-8 text-center">
+            <p className="text-dark-text-secondary">
               Enter a search query above to find entries
             </p>
           </div>
