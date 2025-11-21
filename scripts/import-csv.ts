@@ -1,5 +1,6 @@
 #!/usr/bin/env tsx
 
+import "dotenv/config";
 import { MongoClient, ObjectId } from "mongodb";
 import { createReadStream } from "fs";
 import { parse } from "csv-parse";
@@ -18,16 +19,46 @@ interface CSVRow {
 // Field mappings for each type
 const FIELD_MAPPINGS = {
   word: {
-    required: ["name", "definition"],
-    optional: ["slug", "partOfSpeech", "etymology", "notes", "tags"],
+    required: ["name"],
+    optional: [
+      "slug",
+      "definition",
+      "partOfSpeech",
+      "etymology",
+      "notes",
+      "tags",
+      "context",
+      "conveyance",
+      "topic",
+      "tone",
+    ],
   },
   phrase: {
-    required: ["body", "definition"],
-    optional: ["slug", "source", "notes", "tags"],
+    required: ["body"],
+    optional: [
+      "slug",
+      "definition",
+      "source",
+      "notes",
+      "tags",
+      "context",
+      "conveyance",
+      "topic",
+      "tone",
+    ],
   },
   quote: {
-    required: ["name", "body", "author"],
-    optional: ["slug", "source", "notes", "tags"],
+    required: ["body", "author"],
+    optional: [
+      "slug",
+      "name",
+      "source",
+      "notes",
+      "tags",
+      "topic",
+      "authorType",
+      "tone",
+    ],
   },
   hypothetical: {
     required: ["body"],
@@ -50,6 +81,29 @@ function parseTags(tagsString: string): string[] {
     .split(",")
     .map((tag) => tag.trim())
     .filter((tag) => tag.length > 0);
+}
+
+function collectTags(row: CSVRow): string[] {
+  const tagSources = [
+    row.tags,
+    row.context,
+    row.conveyance,
+    row.topic,
+    row.tone,
+    row.authorType,
+  ];
+
+  const allTags: string[] = [];
+
+  for (const source of tagSources) {
+    if (source && source.trim()) {
+      const tags = parseTags(source);
+      allTags.push(...tags);
+    }
+  }
+
+  // Remove duplicates and return
+  return Array.from(new Set(allTags));
 }
 
 async function validateRow(
@@ -76,7 +130,7 @@ function transformRow(row: CSVRow, type: string) {
     _id: new ObjectId(),
     type,
     slug: row.slug?.trim() || generateSlug(row.name || row.body),
-    tags: parseTags(row.tags || ""),
+    tags: collectTags(row),
     createdAt: now,
     updatedAt: now,
   };
@@ -86,7 +140,7 @@ function transformRow(row: CSVRow, type: string) {
       return {
         ...baseEntry,
         name: row.name.trim(),
-        definition: row.definition.trim(),
+        definition: row.definition?.trim() || undefined,
         partOfSpeech: row.partOfSpeech?.trim() || undefined,
         etymology: row.etymology?.trim() || undefined,
         notes: row.notes?.trim() || undefined,
@@ -96,7 +150,7 @@ function transformRow(row: CSVRow, type: string) {
       return {
         ...baseEntry,
         body: row.body.trim(),
-        definition: row.definition.trim(),
+        definition: row.definition?.trim() || undefined,
         source: row.source?.trim() || undefined,
         notes: row.notes?.trim() || undefined,
       };
@@ -104,7 +158,7 @@ function transformRow(row: CSVRow, type: string) {
     case "quote":
       return {
         ...baseEntry,
-        name: row.name.trim(),
+        name: row.name?.trim() || undefined,
         body: row.body.trim(),
         author: row.author.trim(),
         source: row.source?.trim() || undefined,
@@ -288,16 +342,16 @@ Arguments:
 CSV Format Requirements:
 
   Words:
-    Required: name, definition
-    Optional: slug, partOfSpeech, etymology, notes, tags
+    Required: name
+    Optional: slug, definition, partOfSpeech, etymology, notes, tags, context, conveyance, topic, tone
 
   Phrases:
-    Required: body, definition
-    Optional: slug, source, notes, tags
+    Required: body
+    Optional: slug, definition, source, notes, tags, context, conveyance, topic, tone
 
   Quotes:
-    Required: name, body, author
-    Optional: slug, source, notes, tags
+    Required: body, author
+    Optional: slug, name, source, notes, tags, topic, authorType, tone
 
   Hypotheticals:
     Required: body
