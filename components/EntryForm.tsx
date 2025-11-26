@@ -6,6 +6,7 @@ import WordForm, { WordFormData } from "./WordForm";
 import PhraseForm, { PhraseFormData } from "./PhraseForm";
 import QuoteForm, { QuoteFormData } from "./QuoteForm";
 import HypotheticalForm, { HypotheticalFormData } from "./HypotheticalForm";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { Entry } from "@/types/models";
 
 type EntryFormData =
@@ -32,6 +33,8 @@ export default function EntryForm({
   const router = useRouter();
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleSubmit = async (data: EntryFormData) => {
     setError("");
@@ -43,6 +46,40 @@ export default function EntryForm({
         setError("Authentication required. Please log in.");
         router.push("/admin/login");
         return;
+      }
+
+      // If this is a quote with a new author (has author but no authorId), create the author first
+      if (data.type === "quote" && data.author && !data.authorId) {
+        const authorResponse = await fetch(
+          "/.netlify/functions/authors-create",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ name: data.author }),
+          }
+        );
+
+        const authorData = await authorResponse.json();
+
+        if (!authorResponse.ok) {
+          // If author already exists, use the existing one
+          if (
+            authorResponse.status === 409 &&
+            authorData.error?.details?.existingAuthor
+          ) {
+            data.authorId =
+              authorData.error.details.existingAuthor._id.toString();
+          } else {
+            setError(authorData.error?.message || "Failed to create author");
+            return;
+          }
+        } else {
+          // Author created successfully, use the new ID
+          data.authorId = authorData.author._id.toString();
+        }
       }
 
       const url =
@@ -99,6 +136,55 @@ export default function EntryForm({
     router.push("/admin");
   };
 
+  const handleDelete = async () => {
+    if (!initialData?._id) {
+      setError("Cannot delete: Entry ID is missing");
+      return;
+    }
+
+    setIsDeleting(true);
+    setError("");
+
+    try {
+      const token = localStorage.getItem("auth_token");
+      if (!token) {
+        setError("Authentication required. Please log in.");
+        router.push("/admin/login");
+        return;
+      }
+
+      const response = await fetch(
+        `/.netlify/functions/entries-delete/${initialData._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        setError(responseData.error?.message || "Failed to delete entry");
+        setIsDeleting(false);
+        setShowDeleteModal(false);
+        return;
+      }
+
+      // Success - redirect to admin page
+      setSuccess("Entry deleted successfully!");
+      setTimeout(() => {
+        router.push("/admin");
+      }, 1000);
+    } catch (err) {
+      console.error("Delete error:", err);
+      setError("Network error. Please try again.");
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {error && (
@@ -124,6 +210,9 @@ export default function EntryForm({
           }
           onSubmit={handleSubmit}
           onCancel={handleCancel}
+          onDelete={
+            mode === "edit" ? () => setShowDeleteModal(true) : undefined
+          }
         />
       )}
 
@@ -134,6 +223,9 @@ export default function EntryForm({
           }
           onSubmit={handleSubmit}
           onCancel={handleCancel}
+          onDelete={
+            mode === "edit" ? () => setShowDeleteModal(true) : undefined
+          }
         />
       )}
 
@@ -144,6 +236,9 @@ export default function EntryForm({
           }
           onSubmit={handleSubmit}
           onCancel={handleCancel}
+          onDelete={
+            mode === "edit" ? () => setShowDeleteModal(true) : undefined
+          }
         />
       )}
 
@@ -154,8 +249,24 @@ export default function EntryForm({
           }
           onSubmit={handleSubmit}
           onCancel={handleCancel}
+          onDelete={
+            mode === "edit" ? () => setShowDeleteModal(true) : undefined
+          }
         />
       )}
+
+      {/* Delete confirmation modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        entryTitle={
+          (initialData as any)?.name ||
+          (initialData as any)?.body?.substring(0, 50) ||
+          "this entry"
+        }
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }

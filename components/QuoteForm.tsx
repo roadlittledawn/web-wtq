@@ -3,12 +3,14 @@
 import { useState, FormEvent } from "react";
 import SlugInput from "./SlugInput";
 import TagInput from "./TagInput";
+import AuthorSelect from "./AuthorSelect";
 import { QuoteEntry } from "@/types/models";
 
 interface QuoteFormProps {
   initialData?: Partial<QuoteEntry>;
   onSubmit: (data: QuoteFormData) => Promise<void>;
   onCancel?: () => void;
+  onDelete?: () => void;
 }
 
 export interface QuoteFormData {
@@ -16,7 +18,8 @@ export interface QuoteFormData {
   name?: string;
   slug: string;
   body: string;
-  author: string;
+  author: string; // Kept for backward compatibility
+  authorId?: string; // New field for author reference
   source?: string;
   notes?: string;
   tags: string[];
@@ -30,6 +33,7 @@ export default function QuoteForm({
   initialData,
   onSubmit,
   onCancel,
+  onDelete,
 }: QuoteFormProps) {
   const [formData, setFormData] = useState<QuoteFormData>({
     type: "quote",
@@ -37,6 +41,7 @@ export default function QuoteForm({
     slug: initialData?.slug || "",
     body: initialData?.body || "",
     author: initialData?.author || "",
+    authorId: initialData?.authorId?.toString() || "",
     source: initialData?.source || "",
     notes: initialData?.notes || "",
     tags: initialData?.tags || [],
@@ -83,8 +88,12 @@ export default function QuoteForm({
     if (!formData.body.trim()) {
       newErrors.body = "Body is required";
     }
-    if (!formData.author.trim()) {
-      newErrors.author = "Author is required";
+    // Author is required - either authorId (existing) or author (new)
+    if (
+      (!formData.authorId || !formData.authorId.trim()) &&
+      (!formData.author || !formData.author.trim())
+    ) {
+      newErrors.authorId = "Author is required";
     }
 
     setErrors(newErrors);
@@ -113,10 +122,10 @@ export default function QuoteForm({
       <div>
         <label
           htmlFor="name"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-semibold text-white mb-1"
         >
           Name
-          <span className="text-gray-500 text-xs ml-2">
+          <span className="text-gray-400 text-xs ml-2">
             (Optional title or identifier for this quote)
           </span>
         </label>
@@ -143,7 +152,7 @@ export default function QuoteForm({
       <div>
         <label
           htmlFor="body"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-semibold text-white mb-1"
         >
           Quote Text <span className="text-red-500">*</span>
         </label>
@@ -166,35 +175,36 @@ export default function QuoteForm({
         )}
       </div>
 
-      <div>
-        <label
-          htmlFor="author"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Author <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          id="author"
-          name="author"
-          value={formData.author}
-          onChange={handleChange}
-          disabled={isSubmitting}
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-            errors.author
-              ? "border-red-300 focus:ring-red-500"
-              : "border-gray-300 focus:ring-blue-500"
-          } disabled:bg-gray-100`}
-        />
-        {errors.author && (
-          <p className="text-sm text-red-600 mt-1">{errors.author}</p>
-        )}
-      </div>
+      <AuthorSelect
+        value={formData.authorId || null}
+        onChange={(authorId, authorName) => {
+          if (authorId) {
+            // Existing author selected
+            setFormData((prev) => ({
+              ...prev,
+              authorId: authorId,
+              author: "",
+            }));
+          } else if (authorName) {
+            // New author created - store the name temporarily
+            setFormData((prev) => ({
+              ...prev,
+              authorId: "",
+              author: authorName,
+            }));
+          } else {
+            // Cleared
+            setFormData((prev) => ({ ...prev, authorId: "", author: "" }));
+          }
+        }}
+        error={errors.authorId}
+        disabled={isSubmitting}
+      />
 
       <div>
         <label
           htmlFor="source"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-semibold text-white mb-1"
         >
           Source
         </label>
@@ -213,7 +223,7 @@ export default function QuoteForm({
       <div>
         <label
           htmlFor="notes"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-semibold text-white mb-1"
         >
           Notes
         </label>
@@ -250,6 +260,16 @@ export default function QuoteForm({
             className="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
           >
             Cancel
+          </button>
+        )}
+        {onDelete && (
+          <button
+            type="button"
+            onClick={onDelete}
+            disabled={isSubmitting}
+            className="px-6 py-2 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            Delete
           </button>
         )}
       </div>
