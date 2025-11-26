@@ -1,7 +1,6 @@
 "use client";
 
 import { QuoteEntry } from "@/types/models";
-import AuthorImage from "./AuthorImage";
 import EditButton from "./EditButton";
 import { useState, useEffect } from "react";
 
@@ -30,11 +29,6 @@ export default function QuoteCard({ entry }: QuoteCardProps) {
   return (
     <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6 hover:border-accent-purple transition-all">
       <div className="flex gap-4">
-        {/* Author Image */}
-        <div className="flex-shrink-0">
-          <AuthorImage author={entry.author} />
-        </div>
-
         {/* Quote Content */}
         <div className="flex-1">
           {entry.name && (

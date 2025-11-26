@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { QuoteEntry } from "@/types/models";
 import QuoteCard from "./QuoteCard";
+import AuthorImage from "./AuthorImage";
 import LoadingSpinner from "./LoadingSpinner";
 import EndOfList from "./EndOfList";
 import Heading from "./Heading";
@@ -161,12 +162,17 @@ export default function QuoteBrowser({ selectedTags = [] }: QuoteBrowserProps) {
     <div className="space-y-8">
       {authors.map((author) => (
         <div key={author} id={`author-${author.replace(/\s+/g, "-")}`}>
-          <Heading
-            level={2}
-            className="mb-4 pb-2 border-b-2 border-accent-purple"
-          >
-            {author}
-          </Heading>
+          {/* Author Section Header with Image */}
+          <div className="flex items-center gap-4 mb-4 pb-2 border-b-2 border-accent-purple">
+            <div className="flex-shrink-0">
+              <AuthorImage author={author} />
+            </div>
+            <Heading level={2} className="mb-0">
+              {author}
+            </Heading>
+          </div>
+
+          {/* Quotes by this author */}
           <div className="space-y-4">
             {groupedQuotes[author].map((quote) => (
               <QuoteCard key={quote._id.toString()} entry={quote} />
