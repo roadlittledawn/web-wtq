@@ -58,7 +58,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       <div>
         <label
           htmlFor="username"
-          className="block text-sm font-medium text-dark-text mb-1"
+          className="block text-sm font-semibold text-white mb-1"
         >
           Username
         </label>
@@ -76,7 +76,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       <div>
         <label
           htmlFor="password"
-          className="block text-sm font-medium text-dark-text mb-1"
+          className="block text-sm font-semibold text-white mb-1"
         >
           Password
         </label>
