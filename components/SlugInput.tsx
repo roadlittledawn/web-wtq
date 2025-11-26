@@ -92,7 +92,7 @@ export default function SlugInput({
     <div>
       <label
         htmlFor="slug"
-        className="block text-sm font-medium text-gray-700 mb-1"
+        className="block text-sm font-semibold text-white mb-1"
       >
         Slug
         <span className="text-gray-500 text-xs ml-2">

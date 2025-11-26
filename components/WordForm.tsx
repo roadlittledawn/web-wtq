@@ -9,6 +9,7 @@ interface WordFormProps {
   initialData?: Partial<WordEntry>;
   onSubmit: (data: WordFormData) => Promise<void>;
   onCancel?: () => void;
+  onDelete?: () => void;
 }
 
 export interface WordFormData {
@@ -30,6 +31,7 @@ export default function WordForm({
   initialData,
   onSubmit,
   onCancel,
+  onDelete,
 }: WordFormProps) {
   const [formData, setFormData] = useState<WordFormData>({
     type: "word",
@@ -116,7 +118,7 @@ export default function WordForm({
       <div>
         <label
           htmlFor="name"
-          className="block text-sm font-medium text-dark-text mb-1"
+          className="block text-sm font-semibold text-white mb-1"
         >
           Name <span className="text-accent-pink">*</span>
         </label>
@@ -150,7 +152,7 @@ export default function WordForm({
       <div>
         <label
           htmlFor="definition"
-          className="block text-sm font-medium text-dark-text mb-1"
+          className="block text-sm font-semibold text-white mb-1"
         >
           Definition <span className="text-accent-pink">*</span>
         </label>
@@ -175,7 +177,7 @@ export default function WordForm({
       <div>
         <label
           htmlFor="partOfSpeech"
-          className="block text-sm font-medium text-dark-text mb-1"
+          className="block text-sm font-semibold text-white mb-1"
         >
           Part of Speech
         </label>
@@ -200,7 +202,7 @@ export default function WordForm({
       <div>
         <label
           htmlFor="etymology"
-          className="block text-sm font-medium text-dark-text mb-1"
+          className="block text-sm font-semibold text-white mb-1"
         >
           Etymology
         </label>
@@ -218,7 +220,7 @@ export default function WordForm({
       <div>
         <label
           htmlFor="notes"
-          className="block text-sm font-medium text-dark-text mb-1"
+          className="block text-sm font-semibold text-white mb-1"
         >
           Notes
         </label>
@@ -255,6 +257,16 @@ export default function WordForm({
             className="px-6 py-2 bg-dark-bg-tertiary text-dark-text border-2 border-dark-border rounded-md hover:bg-dark-border focus:outline-none focus:ring-2 focus:ring-dark-border disabled:bg-dark-bg-tertiary disabled:cursor-not-allowed disabled:text-dark-text-muted"
           >
             Cancel
+          </button>
+        )}
+        {onDelete && (
+          <button
+            type="button"
+            onClick={onDelete}
+            disabled={isSubmitting}
+            className="px-6 py-2 bg-accent-pink text-dark-bg font-semibold rounded-md hover:bg-accent-pink/80 focus:outline-none focus:ring-2 focus:ring-accent-pink disabled:bg-dark-border disabled:cursor-not-allowed disabled:text-dark-text-muted"
+          >
+            Delete
           </button>
         )}
       </div>

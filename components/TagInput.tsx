@@ -100,7 +100,7 @@ export default function TagInput({
     <div>
       <label
         htmlFor="tags"
-        className="block text-sm font-medium text-dark-text mb-1"
+        className="block text-sm font-semibold text-white mb-1"
       >
         Tags
       </label>
