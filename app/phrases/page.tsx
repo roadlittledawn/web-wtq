@@ -33,6 +33,7 @@ export default function PhrasesPage() {
               selectedTags={selectedTags}
               onTagToggle={handleTagToggle}
               onClearFilters={handleClearFilters}
+              entryType="phrase"
             />
           </div>
 

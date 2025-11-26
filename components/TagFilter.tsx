@@ -1,9 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Select from "react-select";
 
 interface Tag {
   name: string;
+  usageCount: number;
+}
+
+interface TagOption {
+  label: string;
+  value: string;
   usageCount: number;
 }
 
@@ -11,12 +18,14 @@ interface TagFilterProps {
   selectedTags: string[];
   onTagToggle: (tag: string) => void;
   onClearFilters: () => void;
+  entryType?: "word" | "phrase" | "quote" | "hypothetical";
 }
 
 export default function TagFilter({
   selectedTags,
   onTagToggle,
   onClearFilters,
+  entryType,
 }: TagFilterProps) {
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +35,10 @@ export default function TagFilter({
     async function fetchTags() {
       try {
         setIsLoading(true);
-        const response = await fetch("/.netlify/functions/tags");
+        const url = entryType
+          ? `/.netlify/functions/tags?type=${entryType}`
+          : "/.netlify/functions/tags";
+        const response = await fetch(url);
         if (!response.ok) {
           throw new Error("Failed to fetch tags");
         }
@@ -41,18 +53,49 @@ export default function TagFilter({
     }
 
     fetchTags();
-  }, []);
+  }, [entryType]);
 
-  if (isLoading) {
-    return (
-      <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-4">
-        <h3 className="text-lg font-semibold text-dark-text mb-3">
-          Filter by Tags
-        </h3>
-        <p className="text-dark-text-secondary text-sm">Loading tags...</p>
-      </div>
-    );
-  }
+  // Convert tags to options format with usage count in label
+  const tagOptions: TagOption[] = availableTags.map((tag) => ({
+    label: `${tag.name} (${tag.usageCount})`,
+    value: tag.name,
+    usageCount: tag.usageCount,
+  }));
+
+  // Convert selected tags to option format
+  const selectedOptions: TagOption[] = selectedTags
+    .map((tagName) => {
+      const tag = availableTags.find((t) => t.name === tagName);
+      return tag
+        ? {
+            label: `${tag.name} (${tag.usageCount})`,
+            value: tag.name,
+            usageCount: tag.usageCount,
+          }
+        : null;
+    })
+    .filter((opt): opt is TagOption => opt !== null);
+
+  // Handle tag selection
+  const handleChange = (newValue: readonly TagOption[] | null) => {
+    if (!newValue) {
+      onClearFilters();
+      return;
+    }
+
+    const newTags = newValue.map((option) => option.value);
+    const currentTags = selectedTags;
+
+    // Find added tags
+    const addedTags = newTags.filter((tag) => !currentTags.includes(tag));
+    // Find removed tags
+    const removedTags = currentTags.filter((tag) => !newTags.includes(tag));
+
+    // Toggle added tags
+    addedTags.forEach((tag) => onTagToggle(tag));
+    // Toggle removed tags
+    removedTags.forEach((tag) => onTagToggle(tag));
+  };
 
   if (error) {
     return (
@@ -65,7 +108,7 @@ export default function TagFilter({
     );
   }
 
-  if (availableTags.length === 0) {
+  if (!isLoading && availableTags.length === 0) {
     return (
       <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-4">
         <h3 className="text-lg font-semibold text-dark-text mb-3">
@@ -90,44 +133,100 @@ export default function TagFilter({
         )}
       </div>
 
-      {selectedTags.length > 0 && (
-        <div className="mb-4 pb-4 border-b border-dark-border">
-          <p className="text-sm text-dark-text-secondary mb-2">
-            Active filters:
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {selectedTags.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => onTagToggle(tag)}
-                className="px-3 py-1 bg-accent-pink text-white text-sm rounded-full hover:bg-accent-pink-light transition-colors flex items-center gap-1"
-              >
-                {tag}
-                <span className="text-xs">✕</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      <Select
+        isMulti
+        value={selectedOptions}
+        onChange={handleChange}
+        options={tagOptions}
+        isLoading={isLoading}
+        placeholder="Search and select tags..."
+        className="react-select-container"
+        classNamePrefix="react-select"
+        styles={{
+          control: (base, state) => ({
+            ...base,
+            backgroundColor: "#161b22",
+            borderColor: state.isFocused ? "#06ffa5" : "#30363d",
+            borderWidth: "2px",
+            boxShadow: "none",
+            color: "#e6edf3",
+            "&:hover": {
+              borderColor: "#06ffa5",
+            },
+          }),
+          menu: (base) => ({
+            ...base,
+            backgroundColor: "#161b22",
+            border: "2px solid #30363d",
+          }),
+          option: (base, state) => ({
+            ...base,
+            backgroundColor: state.isFocused
+              ? "#21262d"
+              : state.isSelected
+              ? "#06ffa5"
+              : "#161b22",
+            color: state.isSelected ? "#0d1117" : "#e6edf3",
+            "&:hover": {
+              backgroundColor: "#21262d",
+            },
+          }),
+          input: (base) => ({
+            ...base,
+            color: "#e6edf3",
+          }),
+          placeholder: (base) => ({
+            ...base,
+            color: "#6e7681",
+          }),
+          singleValue: (base) => ({
+            ...base,
+            color: "#e6edf3",
+          }),
+          multiValue: (base) => ({
+            ...base,
+            backgroundColor: "#06ffa5",
+            border: "1px solid #00d98a",
+          }),
+          multiValueLabel: (base) => ({
+            ...base,
+            color: "#0d1117",
+            fontWeight: "600",
+          }),
+          multiValueRemove: (base) => ({
+            ...base,
+            color: "#0d1117",
+            "&:hover": {
+              backgroundColor: "#00d98a",
+              color: "#0d1117",
+            },
+          }),
+          loadingIndicator: (base) => ({
+            ...base,
+            color: "#06ffa5",
+          }),
+          dropdownIndicator: (base) => ({
+            ...base,
+            color: "#8b949e",
+            "&:hover": {
+              color: "#06ffa5",
+            },
+          }),
+          clearIndicator: (base) => ({
+            ...base,
+            color: "#8b949e",
+            "&:hover": {
+              color: "#ff006e",
+            },
+          }),
+        }}
+      />
 
-      <div className="flex flex-wrap gap-2">
-        {availableTags.map((tag) => {
-          const isSelected = selectedTags.includes(tag.name);
-          return (
-            <button
-              key={tag.name}
-              onClick={() => onTagToggle(tag.name)}
-              className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                isSelected
-                  ? "bg-accent-teal text-dark-bg hover:bg-accent-teal-dark"
-                  : "bg-dark-bg-tertiary text-dark-text hover:bg-dark-border"
-              }`}
-            >
-              {tag.name} ({tag.usageCount})
-            </button>
-          );
-        })}
-      </div>
+      <p className="text-sm text-dark-text-secondary mt-2">
+        {availableTags.length} tag{availableTags.length !== 1 ? "s" : ""}{" "}
+        available
+        {selectedTags.length > 0 && ` • ${selectedTags.length} selected`}
+      </p>
     </div>
   );
 }

@@ -33,6 +33,7 @@ export default function HypotheticalsPage() {
               selectedTags={selectedTags}
               onTagToggle={handleTagToggle}
               onClearFilters={handleClearFilters}
+              entryType="hypothetical"
             />
           </div>
 

@@ -33,6 +33,7 @@ export default function QuotesPage() {
               selectedTags={selectedTags}
               onTagToggle={handleTagToggle}
               onClearFilters={handleClearFilters}
+              entryType="quote"
             />
           </div>
 

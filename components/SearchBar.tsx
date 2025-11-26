@@ -1,11 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
-interface Tag {
-  name: string;
-  usageCount: number;
-}
+import { useState } from "react";
+import TagFilter from "./TagFilter";
 
 interface SearchBarProps {
   onSearch: (query: string, type?: string, tags?: string[]) => void;
@@ -23,29 +19,6 @@ export default function SearchBar({
   const [query, setQuery] = useState(initialQuery);
   const [selectedType, setSelectedType] = useState(initialType);
   const [selectedTags, setSelectedTags] = useState<string[]>(initialTags);
-  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
-  const [isLoadingTags, setIsLoadingTags] = useState(true);
-
-  // Fetch available tags
-  useEffect(() => {
-    async function fetchTags() {
-      try {
-        setIsLoadingTags(true);
-        const response = await fetch("/.netlify/functions/tags");
-        if (!response.ok) {
-          throw new Error("Failed to fetch tags");
-        }
-        const data = await response.json();
-        setAvailableTags(data.tags || []);
-      } catch (err) {
-        console.error("Error fetching tags:", err);
-      } finally {
-        setIsLoadingTags(false);
-      }
-    }
-
-    fetchTags();
-  }, []);
 
   // Handle search submission
   const handleSubmit = (e: React.FormEvent) => {
@@ -71,6 +44,11 @@ export default function SearchBar({
   // Handle clear filters
   const handleClearFilters = () => {
     setSelectedType("");
+    setSelectedTags([]);
+  };
+
+  // Handle clear tags only
+  const handleClearTags = () => {
     setSelectedTags([]);
   };
 
@@ -120,38 +98,11 @@ export default function SearchBar({
         </div>
 
         {/* Tag Filter Selection */}
-        <div>
-          <label className="block text-sm font-medium text-dark-text mb-2">
-            Filter by Tags
-          </label>
-          {isLoadingTags ? (
-            <p className="text-sm text-dark-text-secondary">Loading tags...</p>
-          ) : availableTags.length === 0 ? (
-            <p className="text-sm text-dark-text-secondary">
-              No tags available
-            </p>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {availableTags.map((tag) => {
-                const isSelected = selectedTags.includes(tag.name);
-                return (
-                  <button
-                    key={tag.name}
-                    type="button"
-                    onClick={() => handleTagToggle(tag.name)}
-                    className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                      isSelected
-                        ? "bg-accent-teal text-dark-bg hover:bg-accent-teal-dark"
-                        : "bg-dark-bg-tertiary text-dark-text hover:bg-dark-border"
-                    }`}
-                  >
-                    {tag.name} ({tag.usageCount})
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        <TagFilter
+          selectedTags={selectedTags}
+          onTagToggle={handleTagToggle}
+          onClearFilters={handleClearTags}
+        />
 
         {/* Action Buttons */}
         <div className="flex gap-3">
