@@ -53,7 +53,9 @@ export interface QuoteEntry extends BaseEntry {
   type: "quote";
   name?: string;
   body: string;
-  author: string;
+  author: string; // Kept for backward compatibility
+  authorId?: ObjectId; // Reference to Author document
+  authorName?: string; // Denormalized for performance
   source?: string;
   notes?: string;
 }
@@ -81,4 +83,18 @@ export interface Tag {
   name: string;
   usageCount: number;
   createdAt: Date;
+}
+
+/**
+ * Author model for quote attribution
+ */
+export interface Author {
+  _id: ObjectId;
+  firstName: string;
+  lastName: string;
+  slug: string;
+  bio?: string;
+  quoteCount: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
