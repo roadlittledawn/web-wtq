@@ -7,13 +7,11 @@ interface Author {
   _id: string;
   firstName: string;
   lastName: string;
-  quoteCount: number;
 }
 
 interface AuthorOption {
   label: string;
   value: string;
-  quoteCount: number;
 }
 
 interface AuthorFilterProps {
@@ -52,16 +50,15 @@ export default function AuthorFilter({
     fetchAuthors();
   }, []);
 
-  // Convert authors to options format with quote count in label
+  // Convert authors to options format
   const authorOptions: AuthorOption[] = availableAuthors.map((author) => {
     const displayName = author.firstName
       ? `${author.lastName}, ${author.firstName}`
       : author.lastName;
 
     return {
-      label: `${displayName} (${author.quoteCount})`,
+      label: displayName,
       value: author._id,
-      quoteCount: author.quoteCount,
     };
   });
 
@@ -76,9 +73,8 @@ export default function AuthorFilter({
         : author.lastName;
 
       return {
-        label: `${displayName} (${author.quoteCount})`,
+        label: displayName,
         value: author._id,
-        quoteCount: author.quoteCount,
       };
     })
     .filter((opt): opt is AuthorOption => opt !== null);

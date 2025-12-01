@@ -94,7 +94,6 @@ export interface Author {
   lastName: string;
   slug: string;
   bio?: string;
-  quoteCount: number;
   createdAt: Date;
   updatedAt: Date;
 }

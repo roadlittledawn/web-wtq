@@ -7,7 +7,6 @@ interface Author {
   _id: string;
   firstName: string;
   lastName: string;
-  quoteCount: number;
 }
 
 interface AuthorOption {
@@ -59,7 +58,7 @@ export default function AuthorSelect({
               : author.lastName;
 
             return {
-              label: `${displayName} (${author.quoteCount})`,
+              label: displayName,
               value: author._id,
               author,
             };
@@ -98,7 +97,7 @@ export default function AuthorSelect({
               : author.lastName;
 
             const authorOption: AuthorOption = {
-              label: `${displayName} (${author.quoteCount})`,
+              label: displayName,
               value: author._id,
               author,
             };
