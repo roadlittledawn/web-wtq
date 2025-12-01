@@ -10,13 +10,17 @@ import Heading from "./Heading";
 
 interface QuoteBrowserProps {
   selectedTags?: string[];
+  selectedAuthors?: string[];
 }
 
 interface QuotesByAuthor {
   [author: string]: QuoteEntry[];
 }
 
-export default function QuoteBrowser({ selectedTags = [] }: QuoteBrowserProps) {
+export default function QuoteBrowser({
+  selectedTags = [],
+  selectedAuthors = [],
+}: QuoteBrowserProps) {
   const [quotes, setQuotes] = useState<QuoteEntry[]>([]);
   const [groupedQuotes, setGroupedQuotes] = useState<QuotesByAuthor>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -43,6 +47,11 @@ export default function QuoteBrowser({ selectedTags = [] }: QuoteBrowserProps) {
         // Add tag filters if selected
         if (selectedTags.length > 0) {
           params.append("tags", selectedTags.join(","));
+        }
+
+        // Add author filters if selected
+        if (selectedAuthors.length > 0) {
+          params.append("authors", selectedAuthors.join(","));
         }
 
         const response = await fetch(
@@ -91,13 +100,13 @@ export default function QuoteBrowser({ selectedTags = [] }: QuoteBrowserProps) {
     setGroupedQuotes(grouped);
   }, [quotes]);
 
-  // Initial load and when tag filters change
+  // Initial load and when tag or author filters change
   useEffect(() => {
     setQuotes([]);
     setOffset(0);
     setHasMore(true);
     fetchQuotes(true);
-  }, [selectedTags]);
+  }, [selectedTags, selectedAuthors]);
 
   // Load more quotes
   const loadMore = useCallback(() => {
@@ -147,8 +156,8 @@ export default function QuoteBrowser({ selectedTags = [] }: QuoteBrowserProps) {
     return (
       <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6">
         <p className="text-dark-text-secondary">
-          {selectedTags.length > 0
-            ? `No quotes found with the selected tags`
+          {selectedTags.length > 0 || selectedAuthors.length > 0
+            ? `No quotes found with the selected filters`
             : "No quotes found"}
         </p>
       </div>

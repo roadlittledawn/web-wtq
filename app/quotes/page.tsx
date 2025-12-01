@@ -3,11 +3,13 @@
 import { useState } from "react";
 import QuoteBrowser from "@/components/QuoteBrowser";
 import TagFilter from "@/components/TagFilter";
+import AuthorFilter from "@/components/AuthorFilter";
 import PublicLayout from "@/components/PublicLayout";
 import Heading from "@/components/Heading";
 
 export default function QuotesPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
 
   const handleTagToggle = (tag: string) => {
     setSelectedTags((prev) =>
@@ -15,8 +17,20 @@ export default function QuotesPage() {
     );
   };
 
-  const handleClearFilters = () => {
+  const handleClearTagFilters = () => {
     setSelectedTags([]);
+  };
+
+  const handleAuthorToggle = (authorId: string) => {
+    setSelectedAuthors((prev) =>
+      prev.includes(authorId)
+        ? prev.filter((a) => a !== authorId)
+        : [...prev, authorId]
+    );
+  };
+
+  const handleClearAuthorFilters = () => {
+    setSelectedAuthors([]);
   };
 
   return (
@@ -27,19 +41,27 @@ export default function QuotesPage() {
         </Heading>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Tag Filter - Sidebar on large screens */}
-          <div className="lg:col-span-1">
+          {/* Filters - Sidebar on large screens */}
+          <div className="lg:col-span-1 space-y-4">
+            <AuthorFilter
+              selectedAuthors={selectedAuthors}
+              onAuthorToggle={handleAuthorToggle}
+              onClearFilters={handleClearAuthorFilters}
+            />
             <TagFilter
               selectedTags={selectedTags}
               onTagToggle={handleTagToggle}
-              onClearFilters={handleClearFilters}
+              onClearFilters={handleClearTagFilters}
               entryType="quote"
             />
           </div>
 
           {/* Quote Browser - Main content */}
           <div className="lg:col-span-3">
-            <QuoteBrowser selectedTags={selectedTags} />
+            <QuoteBrowser
+              selectedTags={selectedTags}
+              selectedAuthors={selectedAuthors}
+            />
           </div>
         </div>
       </div>
