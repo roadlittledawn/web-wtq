@@ -82,7 +82,7 @@ export default function QuoteBrowser({
         setIsLoading(false);
       }
     },
-    [offset, selectedTags, limit]
+    [offset, selectedTags, selectedAuthors, limit]
   );
 
   // Group quotes by author

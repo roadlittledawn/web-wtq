@@ -134,10 +134,26 @@ const updateEntryHandler = async (
 
     const validatedData = validationResult.data;
 
-    // Convert authorId string to ObjectId for quote entries
+    // Get database connection
+    const db = await getDatabase();
+
+    // Convert authorId string to ObjectId and fetch author name for quote entries
     if (validatedData.type === "quote" && validatedData.authorId) {
       try {
-        (validatedData as any).authorId = new ObjectId(validatedData.authorId);
+        const authorObjectId = new ObjectId(validatedData.authorId);
+        (validatedData as any).authorId = authorObjectId;
+
+        // Fetch author to get the name for denormalization
+        const authorsCollection = db.collection("authors");
+        const author = await authorsCollection.findOne({ _id: authorObjectId });
+
+        if (author) {
+          // Denormalize author name for display
+          const authorName = author.firstName
+            ? `${author.lastName}, ${author.firstName}`
+            : author.lastName;
+          (validatedData as any).author = authorName;
+        }
       } catch (error) {
         return {
           statusCode: 400,
@@ -153,9 +169,6 @@ const updateEntryHandler = async (
         };
       }
     }
-
-    // Get database connection
-    const db = await getDatabase();
     const entriesCollection = db.collection<Entry>("entries");
 
     // Check if entry exists
