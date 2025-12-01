@@ -44,12 +44,60 @@ export const handler: Handler = async (
 
   try {
     // Get query parameters
+    const authorId = event.queryStringParameters?.id;
     const searchQuery = event.queryStringParameters?.q;
     const sortParam = event.queryStringParameters?.sort || "quoteCount";
 
     // Get database connection
     const db = await getDatabase();
     const authorsCollection = db.collection<Author>("authors");
+
+    // If fetching a single author by ID
+    if (authorId) {
+      let author;
+      try {
+        const { ObjectId } = await import("mongodb");
+        author = await authorsCollection.findOne({
+          _id: new ObjectId(authorId),
+        });
+      } catch (err) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({
+            error: {
+              code: "INVALID_ID",
+              message: "Invalid author ID format",
+            },
+          } as ErrorResponse),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+      }
+
+      if (!author) {
+        return {
+          statusCode: 404,
+          body: JSON.stringify({
+            error: {
+              code: "AUTHOR_NOT_FOUND",
+              message: "Author not found",
+            },
+          } as ErrorResponse),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+      }
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify(author),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+    }
 
     // Build query filter
     const filter: any = {};

@@ -134,6 +134,26 @@ const updateEntryHandler = async (
 
     const validatedData = validationResult.data;
 
+    // Convert authorId string to ObjectId for quote entries
+    if (validatedData.type === "quote" && validatedData.authorId) {
+      try {
+        (validatedData as any).authorId = new ObjectId(validatedData.authorId);
+      } catch (error) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({
+            error: {
+              code: "INVALID_AUTHOR_ID",
+              message: "Invalid author ID format",
+            },
+          } as ErrorResponse),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+      }
+    }
+
     // Get database connection
     const db = await getDatabase();
     const entriesCollection = db.collection<Entry>("entries");

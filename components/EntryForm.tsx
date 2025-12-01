@@ -72,6 +72,8 @@ export default function EntryForm({
           ) {
             data.authorId =
               authorData.error.details.existingAuthor._id.toString();
+            // Clear the author name field since we now have an ID
+            data.author = "";
           } else {
             setError(authorData.error?.message || "Failed to create author");
             return;
@@ -79,6 +81,8 @@ export default function EntryForm({
         } else {
           // Author created successfully, use the new ID
           data.authorId = authorData.author._id.toString();
+          // Clear the author name field since we now have an ID
+          data.author = "";
         }
       }
 
