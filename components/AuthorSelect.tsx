@@ -7,7 +7,6 @@ interface Author {
   _id: string;
   firstName: string;
   lastName: string;
-  quoteCount: number;
 }
 
 interface AuthorOption {
@@ -59,7 +58,7 @@ export default function AuthorSelect({
               : author.lastName;
 
             return {
-              label: `${displayName} (${author.quoteCount})`,
+              label: displayName,
               value: author._id,
               author,
             };
@@ -76,6 +75,51 @@ export default function AuthorSelect({
     const debounceTimer = setTimeout(fetchAuthors, 300);
     return () => clearTimeout(debounceTimer);
   }, [inputValue]);
+
+  // Fetch the selected author if value is provided but not in options
+  useEffect(() => {
+    const fetchSelectedAuthor = async () => {
+      // Only fetch if we have a value that looks like an ObjectId and it's not in options
+      if (
+        value &&
+        value.match(/^[0-9a-f]{24}$/i) &&
+        !options.find((opt) => opt.value === value)
+      ) {
+        setIsLoading(true);
+        try {
+          const response = await fetch(
+            `/.netlify/functions/authors?id=${value}`
+          );
+          if (response.ok) {
+            const author = await response.json();
+            const displayName = author.firstName
+              ? `${author.lastName}, ${author.firstName}`
+              : author.lastName;
+
+            const authorOption: AuthorOption = {
+              label: displayName,
+              value: author._id,
+              author,
+            };
+
+            // Add to options if not already present
+            setOptions((prev) => {
+              if (!prev.find((opt) => opt.value === value)) {
+                return [...prev, authorOption];
+              }
+              return prev;
+            });
+          }
+        } catch (err) {
+          console.error("Error fetching selected author:", err);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchSelectedAuthor();
+  }, [value, options]);
 
   // Find selected option
   // If value doesn't match any existing author, it might be a new author name

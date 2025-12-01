@@ -149,7 +149,6 @@ const createAuthorHandler = async (
       lastName,
       slug,
       bio: "",
-      quoteCount: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

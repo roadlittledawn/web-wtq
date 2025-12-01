@@ -101,6 +101,39 @@ const createEntryHandler = async (
 
     // Get database connection
     const db = await getDatabase();
+
+    // Convert authorId string to ObjectId and fetch author name for quote entries
+    if (validatedData.type === "quote" && validatedData.authorId) {
+      try {
+        const authorObjectId = new ObjectId(validatedData.authorId);
+        (validatedData as any).authorId = authorObjectId;
+
+        // Fetch author to get the name for denormalization
+        const authorsCollection = db.collection("authors");
+        const author = await authorsCollection.findOne({ _id: authorObjectId });
+
+        if (author) {
+          // Denormalize author name for display
+          const authorName = author.firstName
+            ? `${author.lastName}, ${author.firstName}`
+            : author.lastName;
+          (validatedData as any).author = authorName;
+        }
+      } catch (error) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({
+            error: {
+              code: "INVALID_AUTHOR_ID",
+              message: "Invalid author ID format",
+            },
+          } as ErrorResponse),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+      }
+    }
     const entriesCollection = db.collection<Entry>("entries");
 
     // Check if slug already exists

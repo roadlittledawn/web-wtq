@@ -117,6 +117,34 @@ export const handler: Handler = async (
         .filter((tag) => tag.length > 0);
     }
 
+    // Parse authors parameter - can be a single author ID or comma-separated list
+    const authorsParam = params.authors;
+    let authorIds: ObjectId[] = [];
+    if (authorsParam) {
+      const authorIdStrings = authorsParam
+        .split(",")
+        .map((id) => id.trim())
+        .filter((id) => id.length > 0);
+
+      // Convert to ObjectIds
+      try {
+        authorIds = authorIdStrings.map((id) => new ObjectId(id));
+      } catch (err) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({
+            error: {
+              code: "INVALID_AUTHOR_ID",
+              message: "Invalid author ID format",
+            },
+          } as ErrorResponse),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+      }
+    }
+
     // Build query filter
     const filter: any = {};
 
@@ -163,6 +191,11 @@ export const handler: Handler = async (
     // Filter by tags if provided (AND logic - entry must have ALL specified tags)
     if (tags.length > 0) {
       filter.tags = { $all: tags };
+    }
+
+    // Filter by authors if provided (OR logic - entry can match ANY of the specified authors)
+    if (authorIds.length > 0) {
+      filter.authorId = { $in: authorIds };
     }
 
     // Build sort options

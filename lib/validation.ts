@@ -34,17 +34,35 @@ export const phraseEntrySchema = baseEntrySchema.extend({
 });
 
 /**
- * Schema for Quote entries
+ * Base schema for Quote entries (without refinement for discriminated union)
  * Requirements: 2.4
  */
-export const quoteEntrySchema = baseEntrySchema.extend({
+const quoteEntryBaseSchema = baseEntrySchema.extend({
   type: z.literal("quote"),
   name: z.string().optional(),
   body: z.string().min(1, "Body is required"),
-  author: z.string().min(1, "Author is required"),
+  author: z.string().optional(), // Legacy field for backward compatibility
+  authorId: z.string().optional(), // Reference to Author document
   source: z.string().optional(),
   notes: z.string().optional(),
 });
+
+/**
+ * Quote entry schema with refinement for validation
+ */
+export const quoteEntrySchema = quoteEntryBaseSchema.refine(
+  (data) => {
+    // At least one of author or authorId must be provided
+    return (
+      (data.author && data.author.trim()) ||
+      (data.authorId && data.authorId.trim())
+    );
+  },
+  {
+    message: "Author is required",
+    path: ["author"], // Show error on author field
+  }
+);
 
 /**
  * Schema for Hypothetical entries
@@ -60,13 +78,30 @@ export const hypotheticalEntrySchema = baseEntrySchema.extend({
 /**
  * Discriminated union schema for all entry types
  * Requirements: 2.1
+ * Note: Using base schema for quotes in union, refinement applied separately
  */
-export const entrySchema = z.discriminatedUnion("type", [
-  wordEntrySchema,
-  phraseEntrySchema,
-  quoteEntrySchema,
-  hypotheticalEntrySchema,
-]);
+export const entrySchema = z
+  .discriminatedUnion("type", [
+    wordEntrySchema,
+    phraseEntrySchema,
+    quoteEntryBaseSchema,
+    hypotheticalEntrySchema,
+  ])
+  .superRefine((data, ctx) => {
+    // Apply quote-specific validation
+    if (data.type === "quote") {
+      const hasAuthor = data.author && data.author.trim();
+      const hasAuthorId = data.authorId && data.authorId.trim();
+
+      if (!hasAuthor && !hasAuthorId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Author is required",
+          path: ["author"],
+        });
+      }
+    }
+  });
 
 /**
  * Type inference from schemas

@@ -44,6 +44,7 @@ export const handler: Handler = async (
 
   try {
     // Get query parameters
+    const authorId = event.queryStringParameters?.id;
     const searchQuery = event.queryStringParameters?.q;
     const sortParam = event.queryStringParameters?.sort || "quoteCount";
 
@@ -51,28 +52,133 @@ export const handler: Handler = async (
     const db = await getDatabase();
     const authorsCollection = db.collection<Author>("authors");
 
-    // Build query filter
-    const filter: any = {};
-    if (searchQuery) {
-      // Case-insensitive search on firstName or lastName
-      filter.$or = [
-        { firstName: { $regex: searchQuery, $options: "i" } },
-        { lastName: { $regex: searchQuery, $options: "i" } },
-      ];
+    // If fetching a single author by ID
+    if (authorId) {
+      let author;
+      try {
+        const { ObjectId } = await import("mongodb");
+        const authorObjectId = new ObjectId(authorId);
+
+        // Use aggregation to get author with dynamic quote count
+        const result = await authorsCollection
+          .aggregate([
+            {
+              $match: { _id: authorObjectId },
+            },
+            {
+              $lookup: {
+                from: "entries",
+                localField: "_id",
+                foreignField: "authorId",
+                as: "quotes",
+              },
+            },
+            {
+              $addFields: {
+                quoteCount: { $size: "$quotes" },
+              },
+            },
+            {
+              $project: {
+                quotes: 0,
+              },
+            },
+          ])
+          .toArray();
+
+        author = result[0];
+      } catch (err) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({
+            error: {
+              code: "INVALID_ID",
+              message: "Invalid author ID format",
+            },
+          } as ErrorResponse),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+      }
+
+      if (!author) {
+        return {
+          statusCode: 404,
+          body: JSON.stringify({
+            error: {
+              code: "AUTHOR_NOT_FOUND",
+              message: "Author not found",
+            },
+          } as ErrorResponse),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+      }
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify(author),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
     }
 
-    // Build sort order
-    let sort: any = {};
+    // Build aggregation pipeline to calculate quote counts dynamically
+    const pipeline: any[] = [];
+
+    // Match stage for search filter
+    if (searchQuery) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { firstName: { $regex: searchQuery, $options: "i" } },
+            { lastName: { $regex: searchQuery, $options: "i" } },
+          ],
+        },
+      });
+    }
+
+    // Lookup stage to count quotes for each author
+    pipeline.push({
+      $lookup: {
+        from: "entries",
+        localField: "_id",
+        foreignField: "authorId",
+        as: "quotes",
+      },
+    });
+
+    // Add computed quoteCount field
+    pipeline.push({
+      $addFields: {
+        quoteCount: { $size: "$quotes" },
+      },
+    });
+
+    // Remove the quotes array (we only need the count)
+    pipeline.push({
+      $project: {
+        quotes: 0,
+      },
+    });
+
+    // Sort stage
     if (sortParam === "name") {
-      // Sort by last name, then first name
-      sort = { lastName: 1, firstName: 1 };
+      pipeline.push({
+        $sort: { lastName: 1, firstName: 1 },
+      });
     } else {
       // Default: sort by quote count descending, then by last name
-      sort = { quoteCount: -1, lastName: 1, firstName: 1 };
+      pipeline.push({
+        $sort: { quoteCount: -1, lastName: 1, firstName: 1 },
+      });
     }
 
-    // Fetch authors
-    const authors = await authorsCollection.find(filter).sort(sort).toArray();
+    // Execute aggregation
+    const authors = await authorsCollection.aggregate(pipeline).toArray();
 
     const total = authors.length;
 

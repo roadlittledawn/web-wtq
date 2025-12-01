@@ -47,6 +47,10 @@ export default function QuoteForm({
     tags: initialData?.tags || [],
   });
 
+  // Track the currently selected author value for the AuthorSelect component
+  // This should be authorId if it exists, otherwise the author name (for new authors), otherwise null
+  const authorSelectValue = formData.authorId || formData.author || null;
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -176,7 +180,7 @@ export default function QuoteForm({
       </div>
 
       <AuthorSelect
-        value={formData.authorId || null}
+        value={authorSelectValue}
         onChange={(authorId, authorName) => {
           if (authorId) {
             // Existing author selected
@@ -195,6 +199,14 @@ export default function QuoteForm({
           } else {
             // Cleared
             setFormData((prev) => ({ ...prev, authorId: "", author: "" }));
+          }
+          // Clear error when author changes
+          if (errors.authorId) {
+            setErrors((prev) => {
+              const newErrors = { ...prev };
+              delete newErrors.authorId;
+              return newErrors;
+            });
           }
         }}
         error={errors.authorId}
