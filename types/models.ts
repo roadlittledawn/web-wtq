@@ -76,6 +76,14 @@ export interface HypotheticalEntry extends BaseEntry {
 export type Entry = WordEntry | PhraseEntry | QuoteEntry | HypotheticalEntry;
 
 /**
+ * Entry with search score for ranked results
+ */
+export interface SearchResultEntry {
+  entry: Entry;
+  score: number;
+}
+
+/**
  * Tag model for categorizing entries
  */
 export interface Tag {

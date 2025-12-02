@@ -6,6 +6,9 @@ import EntryCard from "./EntryCard";
 import LoadingSpinner from "./LoadingSpinner";
 import EndOfList from "./EndOfList";
 
+// Entry with search score from API
+type ScoredEntry = Entry & { score: number };
+
 interface SearchResultsProps {
   query: string;
   type?: string;
@@ -17,7 +20,7 @@ export default function SearchResults({
   type,
   tags,
 }: SearchResultsProps) {
-  const [results, setResults] = useState<Entry[]>([]);
+  const [results, setResults] = useState<ScoredEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
@@ -58,7 +61,7 @@ export default function SearchResults({
         }
 
         const data = await response.json();
-        const fetchedResults = data.results as Entry[];
+        const fetchedResults = data.results as ScoredEntry[];
 
         if (reset) {
           setResults(fetchedResults);
@@ -187,7 +190,17 @@ export default function SearchResults({
       {/* Results list */}
       <div className="space-y-4">
         {results.map((entry) => (
-          <EntryCard key={entry._id.toString()} entry={entry} />
+          <div key={entry._id.toString()} className="relative">
+            {/* Score badge - only show when query exists and score > 0 */}
+            {query && entry.score > 0 && (
+              <div className="absolute -top-2 -right-2 z-10">
+                <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-accent-teal text-dark-bg rounded-full">
+                  Score: {entry.score}
+                </span>
+              </div>
+            )}
+            <EntryCard entry={entry} />
+          </div>
         ))}
       </div>
 
