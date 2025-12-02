@@ -1,6 +1,7 @@
 import { Handler, HandlerEvent, HandlerResponse } from "@netlify/functions";
 import { getDatabase } from "../../lib/mongodb";
 import { Entry } from "../../types/models";
+import { rankEntry } from "../../lib/searchRanking";
 
 interface ErrorResponse {
   error: {
@@ -10,8 +11,10 @@ interface ErrorResponse {
   };
 }
 
+type ScoredEntry = Entry & { score: number };
+
 interface SearchResponse {
-  results: Entry[];
+  results: ScoredEntry[];
   total: number;
   limit: number;
   offset: number;
@@ -21,6 +24,7 @@ interface SearchResponse {
 /**
  * GET /api/search
  * Search entries with text query, type filtering, tag filtering, and pagination
+ * Results are ranked by relevance when a query is provided
  */
 export const handler: Handler = async (
   event: HandlerEvent
@@ -85,37 +89,53 @@ export const handler: Handler = async (
     const filter: any = {};
 
     // Add text search if query is provided
-    // Search 'name' field for word and quote entries,
-    // and 'body' field for phrase and hypothetical entries
+    // Search across ALL relevant fields for ranking to work properly
     if (query) {
       const searchConditions: any[] = [];
 
-      // For word entries: search in 'name' field
+      // Word entries: search name, definition, notes
       searchConditions.push({
         type: "word",
-        name: { $regex: query, $options: "i" },
+        $or: [
+          { name: { $regex: query, $options: "i" } },
+          { definition: { $regex: query, $options: "i" } },
+          { notes: { $regex: query, $options: "i" } },
+        ],
       });
 
-      // For phrase entries: search in 'body' field
+      // Phrase entries: search body, definition, notes
       searchConditions.push({
         type: "phrase",
-        body: { $regex: query, $options: "i" },
+        $or: [
+          { body: { $regex: query, $options: "i" } },
+          { definition: { $regex: query, $options: "i" } },
+          { notes: { $regex: query, $options: "i" } },
+        ],
       });
 
-      // For quote entries: search in 'name' and 'body' fields
+      // Quote entries: search name, body, source, notes
       searchConditions.push({
         type: "quote",
-        name: { $regex: query, $options: "i" },
-      });
-      searchConditions.push({
-        type: "quote",
-        body: { $regex: query, $options: "i" },
+        $or: [
+          { name: { $regex: query, $options: "i" } },
+          { body: { $regex: query, $options: "i" } },
+          { source: { $regex: query, $options: "i" } },
+          { notes: { $regex: query, $options: "i" } },
+        ],
       });
 
-      // For hypothetical entries: search in 'body' field
+      // Hypothetical entries: search body, notes
       searchConditions.push({
         type: "hypothetical",
-        body: { $regex: query, $options: "i" },
+        $or: [
+          { body: { $regex: query, $options: "i" } },
+          { notes: { $regex: query, $options: "i" } },
+        ],
+      });
+
+      // Also search tags across all types
+      searchConditions.push({
+        tags: { $regex: query, $options: "i" },
       });
 
       filter.$or = searchConditions;
@@ -135,32 +155,70 @@ export const handler: Handler = async (
     const db = await getDatabase();
     const entriesCollection = db.collection<Entry>("entries");
 
-    // Get total count for pagination
-    const total = await entriesCollection.countDocuments(filter);
+    // If there's a query, we need to fetch all matches, rank them, then paginate
+    // If no query, use the original approach (no ranking needed)
+    if (query) {
+      // Fetch all matching entries for ranking
+      // Note: For very large result sets, this could be optimized with aggregation pipelines
+      const allResults = await entriesCollection.find(filter).toArray();
 
-    // Fetch search results with pagination
-    // Sort by relevance (entries with name matches first, then by name)
-    const results = await entriesCollection
-      .find(filter)
-      .sort({ name: 1 })
-      .skip(offset)
-      .limit(limit)
-      .toArray();
+      // Rank each entry
+      const scoredResults: ScoredEntry[] = allResults.map((entry) => ({
+        ...entry,
+        score: rankEntry(entry, query),
+      }));
 
-    // Return success response
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        results,
-        total,
-        limit,
-        offset,
-        query,
-      } as SearchResponse),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
+      // Sort by score descending (highest score first)
+      scoredResults.sort((a, b) => b.score - a.score);
+
+      // Apply pagination after sorting
+      const paginatedResults = scoredResults.slice(offset, offset + limit);
+
+      // Return success response with ranked results
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          results: paginatedResults,
+          total: scoredResults.length,
+          limit,
+          offset,
+          query,
+        } as SearchResponse),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+    } else {
+      // No query - use original behavior without ranking
+      const total = await entriesCollection.countDocuments(filter);
+
+      const results = await entriesCollection
+        .find(filter)
+        .sort({ name: 1 })
+        .skip(offset)
+        .limit(limit)
+        .toArray();
+
+      // Add score of 0 for consistency
+      const scoredResults: ScoredEntry[] = results.map((entry) => ({
+        ...entry,
+        score: 0,
+      }));
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          results: scoredResults,
+          total,
+          limit,
+          offset,
+          query,
+        } as SearchResponse),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+    }
   } catch (error) {
     console.error("Error performing search:", error);
 
