@@ -100,7 +100,7 @@ export default function Header({ isAuthenticated }: HeaderProps) {
               ) : (
                 <li>
                   <Link
-                    href="/login"
+                    href="/admin/login"
                     className="px-3 py-1 bg-accent-teal text-white rounded hover:opacity-90 transition-opacity"
                   >
                     Login
@@ -244,7 +244,7 @@ export default function Header({ isAuthenticated }: HeaderProps) {
               </Link>
             ) : (
               <Link
-                href="/login"
+                href="/admin/login"
                 className="block w-full text-center px-4 py-3 bg-accent-teal text-white rounded hover:opacity-90 transition-opacity"
                 onClick={closeMobileMenu}
               >
