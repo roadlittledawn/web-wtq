@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import SlugInput from "./SlugInput";
 import TagInput from "./TagInput";
+import SuggestedTags from "./SuggestedTags";
 import { PhraseEntry } from "@/types/models";
 
 interface PhraseFormProps {
@@ -44,6 +45,9 @@ export default function PhraseForm({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [suggestedTags, setSuggestedTags] = useState<string[]>([]);
+  const [isSuggestingTags, setIsSuggestingTags] = useState(false);
+  const [suggestError, setSuggestError] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -72,6 +76,51 @@ export default function PhraseForm({
 
   const handleTagsChange = (tags: string[]) => {
     setFormData((prev) => ({ ...prev, tags }));
+  };
+
+  const handleSuggestTags = async () => {
+    if (!formData.body.trim()) {
+      setSuggestError("Please enter phrase text first");
+      return;
+    }
+
+    setIsSuggestingTags(true);
+    setSuggestError(null);
+
+    try {
+      const response = await fetch("/.netlify/functions/suggest-tags", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          body: formData.body,
+          type: "phrase",
+          source: formData.source || undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get tag suggestions");
+      }
+
+      const data = await response.json();
+      setSuggestedTags(data.tags || []);
+    } catch (err) {
+      console.error("Error suggesting tags:", err);
+      setSuggestError("Failed to get AI suggestions. Please try again.");
+    } finally {
+      setIsSuggestingTags(false);
+    }
+  };
+
+  const handleSuggestedTagClick = (tag: string) => {
+    if (!formData.tags.includes(tag)) {
+      setFormData((prev) => ({
+        ...prev,
+        tags: [...prev.tags, tag],
+      }));
+    }
   };
 
   const validate = (): boolean => {
@@ -134,7 +183,26 @@ export default function PhraseForm({
         {errors.body && (
           <p className="text-sm text-red-600 mt-1">{errors.body}</p>
         )}
+        <button
+          type="button"
+          onClick={handleSuggestTags}
+          disabled={isSuggestingTags || isSubmitting || !formData.body.trim()}
+          className="mt-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm font-medium"
+        >
+          {isSuggestingTags ? "Suggesting..." : "✨ Suggest Tags with AI"}
+        </button>
+        {suggestError && (
+          <p className="text-sm text-red-600 mt-1">{suggestError}</p>
+        )}
       </div>
+
+      {suggestedTags.length > 0 && (
+        <SuggestedTags
+          suggestions={suggestedTags}
+          onTagClick={handleSuggestedTagClick}
+          selectedTags={formData.tags}
+        />
+      )}
 
       <SlugInput
         value={formData.slug}
