@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import SlugInput from "./SlugInput";
 import TagInput from "./TagInput";
+import SuggestedTags from "./SuggestedTags";
 import { PhraseEntry } from "@/types/models";
 
 interface PhraseFormProps {
@@ -44,6 +45,9 @@ export default function PhraseForm({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [suggestedTags, setSuggestedTags] = useState<string[]>([]);
+  const [isSuggestingTags, setIsSuggestingTags] = useState(false);
+  const [suggestError, setSuggestError] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -72,6 +76,51 @@ export default function PhraseForm({
 
   const handleTagsChange = (tags: string[]) => {
     setFormData((prev) => ({ ...prev, tags }));
+  };
+
+  const handleSuggestTags = async () => {
+    if (!formData.body.trim()) {
+      setSuggestError("Please enter phrase text first");
+      return;
+    }
+
+    setIsSuggestingTags(true);
+    setSuggestError(null);
+
+    try {
+      const response = await fetch("/.netlify/functions/suggest-tags", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          body: formData.body,
+          type: "phrase",
+          source: formData.source || undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get tag suggestions");
+      }
+
+      const data = await response.json();
+      setSuggestedTags(data.tags || []);
+    } catch (err) {
+      console.error("Error suggesting tags:", err);
+      setSuggestError("Failed to get AI suggestions. Please try again.");
+    } finally {
+      setIsSuggestingTags(false);
+    }
+  };
+
+  const handleSuggestedTagClick = (tag: string) => {
+    if (!formData.tags.includes(tag)) {
+      setFormData((prev) => ({
+        ...prev,
+        tags: [...prev.tags, tag],
+      }));
+    }
   };
 
   const validate = (): boolean => {
@@ -134,84 +183,104 @@ export default function PhraseForm({
         {errors.body && (
           <p className="text-sm text-red-600 mt-1">{errors.body}</p>
         )}
-      </div>
 
-      <SlugInput
-        value={formData.slug}
-        onChange={handleSlugChange}
-        sourceText={formData.body}
-        excludeId={initialData?._id?.toString()}
-        error={errors.slug}
-        disabled={isSubmitting}
-      />
-
-      <div>
-        <label
-          htmlFor="definition"
-          className="block text-sm font-semibold text-white mb-1"
-        >
-          Definition <span className="text-red-500">*</span>
-        </label>
-        <textarea
-          id="definition"
-          name="definition"
-          value={formData.definition}
-          onChange={handleChange}
+        <SlugInput
+          value={formData.slug}
+          onChange={handleSlugChange}
+          sourceText={formData.body}
+          excludeId={initialData?._id?.toString()}
+          error={errors.slug}
           disabled={isSubmitting}
-          rows={3}
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-            errors.definition
-              ? "border-red-300 focus:ring-red-500"
-              : "border-gray-300 focus:ring-blue-500"
-          } disabled:bg-gray-100`}
         />
-        {errors.definition && (
-          <p className="text-sm text-red-600 mt-1">{errors.definition}</p>
+
+        <div>
+          <label
+            htmlFor="definition"
+            className="block text-sm font-semibold text-white mb-1"
+          >
+            Definition <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            id="definition"
+            name="definition"
+            value={formData.definition}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            rows={3}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+              errors.definition
+                ? "border-red-300 focus:ring-red-500"
+                : "border-gray-300 focus:ring-blue-500"
+            } disabled:bg-gray-100`}
+          />
+          {errors.definition && (
+            <p className="text-sm text-red-600 mt-1">{errors.definition}</p>
+          )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="source"
+            className="block text-sm font-semibold text-white mb-1"
+          >
+            Source
+          </label>
+          <input
+            type="text"
+            id="source"
+            name="source"
+            value={formData.source}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            placeholder="Where did you encounter this phrase?"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="notes"
+            className="block text-sm font-semibold text-white mb-1"
+          >
+            Notes
+          </label>
+          <textarea
+            id="notes"
+            name="notes"
+            value={formData.notes}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          />
+        </div>
+
+        <TagInput
+          value={formData.tags}
+          onChange={handleTagsChange}
+          disabled={isSubmitting}
+        />
+
+        <button
+          type="button"
+          onClick={handleSuggestTags}
+          disabled={isSuggestingTags || isSubmitting || !formData.body.trim()}
+          className="mt-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm font-medium"
+        >
+          {isSuggestingTags ? "Suggesting..." : "✨ Suggest Tags with AI"}
+        </button>
+        {suggestError && (
+          <p className="text-sm text-red-600 mt-1">{suggestError}</p>
         )}
       </div>
 
-      <div>
-        <label
-          htmlFor="source"
-          className="block text-sm font-semibold text-white mb-1"
-        >
-          Source
-        </label>
-        <input
-          type="text"
-          id="source"
-          name="source"
-          value={formData.source}
-          onChange={handleChange}
-          disabled={isSubmitting}
-          placeholder="Where did you encounter this phrase?"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+      {suggestedTags.length > 0 && (
+        <SuggestedTags
+          suggestions={suggestedTags}
+          onTagClick={handleSuggestedTagClick}
+          selectedTags={formData.tags}
         />
-      </div>
-
-      <div>
-        <label
-          htmlFor="notes"
-          className="block text-sm font-semibold text-white mb-1"
-        >
-          Notes
-        </label>
-        <textarea
-          id="notes"
-          name="notes"
-          value={formData.notes}
-          onChange={handleChange}
-          disabled={isSubmitting}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-        />
-      </div>
-
-      <TagInput
-        value={formData.tags}
-        onChange={handleTagsChange}
-        disabled={isSubmitting}
-      />
+      )}
 
       <div className="flex gap-3 pt-4">
         <button
