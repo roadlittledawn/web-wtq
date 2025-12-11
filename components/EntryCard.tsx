@@ -2,6 +2,7 @@
 
 import { Entry } from "@/types/models";
 import EditButton from "./EditButton";
+import DefinitionSourceBadge from "./DefinitionSourceBadge";
 import { useState, useEffect } from "react";
 
 interface EntryCardProps {
@@ -40,7 +41,12 @@ export default function EntryCard({ entry }: EntryCardProps) {
                   ({entry.partOfSpeech})
                 </span>
               )}
-              <p className="mt-2 text-dark-text">{entry.definition}</p>
+              <div className="mt-2">
+                <p className="text-dark-text inline">{entry.definition}</p>
+                {entry.definition && (
+                  <DefinitionSourceBadge entry={entry} className="ml-2" />
+                )}
+              </div>
               {entry.etymology && (
                 <p className="mt-2 text-sm text-dark-text-secondary">
                   <span className="font-semibold text-accent-teal">
