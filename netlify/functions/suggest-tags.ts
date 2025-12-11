@@ -122,9 +122,17 @@ export const handler: Handler = async (
     }
 
     // Create AI prompt
-    const prompt = `Analyze this ${request.type} and suggest 3-6 relevant tags.${contextInfo}
+    const prompt = `Analyze this ${
+      request.type
+    } and suggest 3-6 relevant tags.${contextInfo}
 
-${request.type === "quote" ? "Quote" : request.type === "phrase" ? "Phrase" : "Hypothetical"}: "${request.body}"
+${
+  request.type === "quote"
+    ? "Quote"
+    : request.type === "phrase"
+    ? "Phrase"
+    : "Hypothetical"
+}: "${request.body}"
 
 IMPORTANT: Prefer using existing tags from this list when relevant:
 ${existingTagNames.join(", ")}
@@ -143,7 +151,7 @@ Use lowercase for all tags. Maximum 6 tags. Only include tags you're confident a
 
     // Call Anthropic API
     const message = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20241022",
+      model: "claude-sonnet-4-5-20250929",
       max_tokens: 1024,
       messages: [
         {
@@ -173,7 +181,9 @@ Use lowercase for all tags. Maximum 6 tags. Only include tags you're confident a
     }
 
     // Ensure tags are lowercase and unique
-    suggestedTags = Array.from(new Set(suggestedTags.map((tag) => tag.toLowerCase())));
+    suggestedTags = Array.from(
+      new Set(suggestedTags.map((tag) => tag.toLowerCase()))
+    );
 
     // Limit to 6 tags
     suggestedTags = suggestedTags.slice(0, 6);
