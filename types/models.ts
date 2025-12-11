@@ -30,6 +30,13 @@ export interface WordEntry extends BaseEntry {
   type: "word";
   name: string;
   definition?: string;
+
+  // API-sourced definition tracking
+  definitionSource?: "manual" | "api";
+  apiProvider?: string; // e.g., "free-dictionary", "merriam-webster"
+  apiLookupStatus?: "found" | "not_found" | "error";
+  apiLookupAttemptedAt?: Date;
+
   partOfSpeech?: string;
   etymology?: string;
   notes?: string;
