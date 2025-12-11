@@ -227,6 +227,84 @@ export default function QuoteForm({
         {errors.body && (
           <p className="text-sm text-red-600 mt-1">{errors.body}</p>
         )}
+
+        <AuthorSelect
+          value={authorSelectValue}
+          onChange={(authorId, authorName) => {
+            if (authorId) {
+              // Existing author selected
+              setFormData((prev) => ({
+                ...prev,
+                authorId: authorId,
+                author: "",
+              }));
+            } else if (authorName) {
+              // New author created - store the name temporarily
+              setFormData((prev) => ({
+                ...prev,
+                authorId: "",
+                author: authorName,
+              }));
+            } else {
+              // Cleared
+              setFormData((prev) => ({ ...prev, authorId: "", author: "" }));
+            }
+            // Clear error when author changes
+            if (errors.authorId) {
+              setErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors.authorId;
+                return newErrors;
+              });
+            }
+          }}
+          error={errors.authorId}
+          disabled={isSubmitting}
+        />
+
+        <div>
+          <label
+            htmlFor="source"
+            className="block text-sm font-semibold text-white mb-1"
+          >
+            Source
+          </label>
+          <input
+            type="text"
+            id="source"
+            name="source"
+            value={formData.source}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            placeholder="Book, speech, interview, etc."
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="notes"
+            className="block text-sm font-semibold text-white mb-1"
+          >
+            Notes
+          </label>
+          <textarea
+            id="notes"
+            name="notes"
+            value={formData.notes}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          />
+        </div>
+
+        <TagInput
+          value={formData.tags}
+          onChange={handleTagsChange}
+          disabled={isSubmitting}
+        />
+
         <button
           type="button"
           onClick={handleSuggestTags}
@@ -247,83 +325,6 @@ export default function QuoteForm({
           selectedTags={formData.tags}
         />
       )}
-
-      <AuthorSelect
-        value={authorSelectValue}
-        onChange={(authorId, authorName) => {
-          if (authorId) {
-            // Existing author selected
-            setFormData((prev) => ({
-              ...prev,
-              authorId: authorId,
-              author: "",
-            }));
-          } else if (authorName) {
-            // New author created - store the name temporarily
-            setFormData((prev) => ({
-              ...prev,
-              authorId: "",
-              author: authorName,
-            }));
-          } else {
-            // Cleared
-            setFormData((prev) => ({ ...prev, authorId: "", author: "" }));
-          }
-          // Clear error when author changes
-          if (errors.authorId) {
-            setErrors((prev) => {
-              const newErrors = { ...prev };
-              delete newErrors.authorId;
-              return newErrors;
-            });
-          }
-        }}
-        error={errors.authorId}
-        disabled={isSubmitting}
-      />
-
-      <div>
-        <label
-          htmlFor="source"
-          className="block text-sm font-semibold text-white mb-1"
-        >
-          Source
-        </label>
-        <input
-          type="text"
-          id="source"
-          name="source"
-          value={formData.source}
-          onChange={handleChange}
-          disabled={isSubmitting}
-          placeholder="Book, speech, interview, etc."
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="notes"
-          className="block text-sm font-semibold text-white mb-1"
-        >
-          Notes
-        </label>
-        <textarea
-          id="notes"
-          name="notes"
-          value={formData.notes}
-          onChange={handleChange}
-          disabled={isSubmitting}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-        />
-      </div>
-
-      <TagInput
-        value={formData.tags}
-        onChange={handleTagsChange}
-        disabled={isSubmitting}
-      />
 
       <div className="flex gap-3 pt-4">
         <button

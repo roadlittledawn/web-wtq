@@ -183,6 +183,84 @@ export default function PhraseForm({
         {errors.body && (
           <p className="text-sm text-red-600 mt-1">{errors.body}</p>
         )}
+
+        <SlugInput
+          value={formData.slug}
+          onChange={handleSlugChange}
+          sourceText={formData.body}
+          excludeId={initialData?._id?.toString()}
+          error={errors.slug}
+          disabled={isSubmitting}
+        />
+
+        <div>
+          <label
+            htmlFor="definition"
+            className="block text-sm font-semibold text-white mb-1"
+          >
+            Definition <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            id="definition"
+            name="definition"
+            value={formData.definition}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            rows={3}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+              errors.definition
+                ? "border-red-300 focus:ring-red-500"
+                : "border-gray-300 focus:ring-blue-500"
+            } disabled:bg-gray-100`}
+          />
+          {errors.definition && (
+            <p className="text-sm text-red-600 mt-1">{errors.definition}</p>
+          )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="source"
+            className="block text-sm font-semibold text-white mb-1"
+          >
+            Source
+          </label>
+          <input
+            type="text"
+            id="source"
+            name="source"
+            value={formData.source}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            placeholder="Where did you encounter this phrase?"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="notes"
+            className="block text-sm font-semibold text-white mb-1"
+          >
+            Notes
+          </label>
+          <textarea
+            id="notes"
+            name="notes"
+            value={formData.notes}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          />
+        </div>
+
+        <TagInput
+          value={formData.tags}
+          onChange={handleTagsChange}
+          disabled={isSubmitting}
+        />
+
         <button
           type="button"
           onClick={handleSuggestTags}
@@ -203,83 +281,6 @@ export default function PhraseForm({
           selectedTags={formData.tags}
         />
       )}
-
-      <SlugInput
-        value={formData.slug}
-        onChange={handleSlugChange}
-        sourceText={formData.body}
-        excludeId={initialData?._id?.toString()}
-        error={errors.slug}
-        disabled={isSubmitting}
-      />
-
-      <div>
-        <label
-          htmlFor="definition"
-          className="block text-sm font-semibold text-white mb-1"
-        >
-          Definition <span className="text-red-500">*</span>
-        </label>
-        <textarea
-          id="definition"
-          name="definition"
-          value={formData.definition}
-          onChange={handleChange}
-          disabled={isSubmitting}
-          rows={3}
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-            errors.definition
-              ? "border-red-300 focus:ring-red-500"
-              : "border-gray-300 focus:ring-blue-500"
-          } disabled:bg-gray-100`}
-        />
-        {errors.definition && (
-          <p className="text-sm text-red-600 mt-1">{errors.definition}</p>
-        )}
-      </div>
-
-      <div>
-        <label
-          htmlFor="source"
-          className="block text-sm font-semibold text-white mb-1"
-        >
-          Source
-        </label>
-        <input
-          type="text"
-          id="source"
-          name="source"
-          value={formData.source}
-          onChange={handleChange}
-          disabled={isSubmitting}
-          placeholder="Where did you encounter this phrase?"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="notes"
-          className="block text-sm font-semibold text-white mb-1"
-        >
-          Notes
-        </label>
-        <textarea
-          id="notes"
-          name="notes"
-          value={formData.notes}
-          onChange={handleChange}
-          disabled={isSubmitting}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-        />
-      </div>
-
-      <TagInput
-        value={formData.tags}
-        onChange={handleTagsChange}
-        disabled={isSubmitting}
-      />
 
       <div className="flex gap-3 pt-4">
         <button
