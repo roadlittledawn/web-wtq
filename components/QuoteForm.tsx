@@ -4,6 +4,7 @@ import { useState, FormEvent } from "react";
 import SlugInput from "./SlugInput";
 import TagInput from "./TagInput";
 import AuthorSelect from "./AuthorSelect";
+import SuggestedTags from "./SuggestedTags";
 import { QuoteEntry } from "@/types/models";
 
 interface QuoteFormProps {
@@ -53,6 +54,9 @@ export default function QuoteForm({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [suggestedTags, setSuggestedTags] = useState<string[]>([]);
+  const [isSuggestingTags, setIsSuggestingTags] = useState(false);
+  const [suggestError, setSuggestError] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -81,6 +85,52 @@ export default function QuoteForm({
 
   const handleTagsChange = (tags: string[]) => {
     setFormData((prev) => ({ ...prev, tags }));
+  };
+
+  const handleSuggestTags = async () => {
+    if (!formData.body.trim()) {
+      setSuggestError("Please enter quote text first");
+      return;
+    }
+
+    setIsSuggestingTags(true);
+    setSuggestError(null);
+
+    try {
+      const response = await fetch("/.netlify/functions/suggest-tags", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          body: formData.body,
+          type: "quote",
+          author: formData.author || undefined,
+          source: formData.source || undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get tag suggestions");
+      }
+
+      const data = await response.json();
+      setSuggestedTags(data.tags || []);
+    } catch (err) {
+      console.error("Error suggesting tags:", err);
+      setSuggestError("Failed to get AI suggestions. Please try again.");
+    } finally {
+      setIsSuggestingTags(false);
+    }
+  };
+
+  const handleSuggestedTagClick = (tag: string) => {
+    if (!formData.tags.includes(tag)) {
+      setFormData((prev) => ({
+        ...prev,
+        tags: [...prev.tags, tag],
+      }));
+    }
   };
 
   const validate = (): boolean => {
@@ -177,84 +227,104 @@ export default function QuoteForm({
         {errors.body && (
           <p className="text-sm text-red-600 mt-1">{errors.body}</p>
         )}
-      </div>
 
-      <AuthorSelect
-        value={authorSelectValue}
-        onChange={(authorId, authorName) => {
-          if (authorId) {
-            // Existing author selected
-            setFormData((prev) => ({
-              ...prev,
-              authorId: authorId,
-              author: "",
-            }));
-          } else if (authorName) {
-            // New author created - store the name temporarily
-            setFormData((prev) => ({
-              ...prev,
-              authorId: "",
-              author: authorName,
-            }));
-          } else {
-            // Cleared
-            setFormData((prev) => ({ ...prev, authorId: "", author: "" }));
-          }
-          // Clear error when author changes
-          if (errors.authorId) {
-            setErrors((prev) => {
-              const newErrors = { ...prev };
-              delete newErrors.authorId;
-              return newErrors;
-            });
-          }
-        }}
-        error={errors.authorId}
-        disabled={isSubmitting}
-      />
-
-      <div>
-        <label
-          htmlFor="source"
-          className="block text-sm font-semibold text-white mb-1"
-        >
-          Source
-        </label>
-        <input
-          type="text"
-          id="source"
-          name="source"
-          value={formData.source}
-          onChange={handleChange}
+        <AuthorSelect
+          value={authorSelectValue}
+          onChange={(authorId, authorName) => {
+            if (authorId) {
+              // Existing author selected
+              setFormData((prev) => ({
+                ...prev,
+                authorId: authorId,
+                author: "",
+              }));
+            } else if (authorName) {
+              // New author created - store the name temporarily
+              setFormData((prev) => ({
+                ...prev,
+                authorId: "",
+                author: authorName,
+              }));
+            } else {
+              // Cleared
+              setFormData((prev) => ({ ...prev, authorId: "", author: "" }));
+            }
+            // Clear error when author changes
+            if (errors.authorId) {
+              setErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors.authorId;
+                return newErrors;
+              });
+            }
+          }}
+          error={errors.authorId}
           disabled={isSubmitting}
-          placeholder="Book, speech, interview, etc."
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
         />
-      </div>
 
-      <div>
-        <label
-          htmlFor="notes"
-          className="block text-sm font-semibold text-white mb-1"
-        >
-          Notes
-        </label>
-        <textarea
-          id="notes"
-          name="notes"
-          value={formData.notes}
-          onChange={handleChange}
+        <div>
+          <label
+            htmlFor="source"
+            className="block text-sm font-semibold text-white mb-1"
+          >
+            Source
+          </label>
+          <input
+            type="text"
+            id="source"
+            name="source"
+            value={formData.source}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            placeholder="Book, speech, interview, etc."
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="notes"
+            className="block text-sm font-semibold text-white mb-1"
+          >
+            Notes
+          </label>
+          <textarea
+            id="notes"
+            name="notes"
+            value={formData.notes}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          />
+        </div>
+
+        <TagInput
+          value={formData.tags}
+          onChange={handleTagsChange}
           disabled={isSubmitting}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
         />
+
+        <button
+          type="button"
+          onClick={handleSuggestTags}
+          disabled={isSuggestingTags || isSubmitting || !formData.body.trim()}
+          className="mt-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm font-medium"
+        >
+          {isSuggestingTags ? "Suggesting..." : "✨ Suggest Tags with AI"}
+        </button>
+        {suggestError && (
+          <p className="text-sm text-red-600 mt-1">{suggestError}</p>
+        )}
       </div>
 
-      <TagInput
-        value={formData.tags}
-        onChange={handleTagsChange}
-        disabled={isSubmitting}
-      />
+      {suggestedTags.length > 0 && (
+        <SuggestedTags
+          suggestions={suggestedTags}
+          onTagClick={handleSuggestedTagClick}
+          selectedTags={formData.tags}
+        />
+      )}
 
       <div className="flex gap-3 pt-4">
         <button
