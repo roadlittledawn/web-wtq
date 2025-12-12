@@ -16,7 +16,7 @@ export interface WordFormData {
   type: "word";
   name: string;
   slug: string;
-  definition: string;
+  definition?: string; // Optional - API will fetch if not provided
   partOfSpeech?: string;
   etymology?: string;
   notes?: string;
@@ -88,9 +88,7 @@ export default function WordForm({
     if (!formData.slug.trim()) {
       newErrors.slug = "Slug is required";
     }
-    if (!formData.definition.trim()) {
-      newErrors.definition = "Definition is required";
-    }
+    // Definition is now optional - API will fetch if not provided
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
