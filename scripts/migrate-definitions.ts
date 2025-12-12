@@ -1,4 +1,10 @@
 #!/usr/bin/env tsx
+
+// IMPORTANT: Load .env BEFORE any other imports
+// This ensures MONGODB_URI is available when mongodb.ts is imported
+import { config } from "dotenv";
+config();
+
 /**
  * Definition Migration Script
  *
@@ -20,10 +26,6 @@
  *   npx tsx scripts/migrate-definitions.ts --dry-run --limit 10
  *   npx tsx scripts/migrate-definitions.ts
  */
-
-// Load environment variables from .env file
-import { config } from "dotenv";
-config();
 
 import { getDatabase, closeConnection } from "../lib/mongodb";
 import { updateDefinitions } from "../lib/definition-updater";
