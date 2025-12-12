@@ -17,7 +17,7 @@ export interface PhraseFormData {
   type: "phrase";
   body: string;
   slug: string;
-  definition: string;
+  definition?: string; // Optional - can be added later or fetched via API
   source?: string;
   notes?: string;
   tags: string[];
@@ -132,9 +132,7 @@ export default function PhraseForm({
     if (!formData.slug.trim()) {
       newErrors.slug = "Slug is required";
     }
-    if (!formData.definition.trim()) {
-      newErrors.definition = "Definition is required";
-    }
+    // Definition is now optional - can be added later or fetched via API
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

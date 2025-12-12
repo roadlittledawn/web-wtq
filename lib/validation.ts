@@ -16,6 +16,13 @@ export const wordEntrySchema = baseEntrySchema.extend({
   type: z.literal("word"),
   name: z.string().min(1, "Name is required"),
   definition: z.string().optional(),
+
+  // API-sourced definition tracking fields
+  definitionSource: z.enum(["manual", "api"]).optional(),
+  apiProvider: z.string().optional(),
+  apiLookupStatus: z.enum(["found", "not_found", "error"]).optional(),
+  apiLookupAttemptedAt: z.date().optional(),
+
   partOfSpeech: z.string().optional(),
   etymology: z.string().optional(),
   notes: z.string().optional(),

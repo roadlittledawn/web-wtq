@@ -215,6 +215,31 @@ const updateEntryHandler = async (
       }
     }
 
+    // Handle definition changes for word entries
+    if (validatedData.type === "word") {
+      const existingWordEntry = existingEntry as any;
+      const newDefinition = (validatedData as any).definition;
+      const oldDefinition = existingWordEntry.definition;
+
+      // If definition text changed or was added
+      if (newDefinition !== oldDefinition) {
+        if (newDefinition) {
+          // User provided or edited a definition - mark as manual
+          (validatedData as any).definitionSource = "manual";
+          // Clear API tracking fields
+          (validatedData as any).apiProvider = undefined;
+          (validatedData as any).apiLookupStatus = undefined;
+          (validatedData as any).apiLookupAttemptedAt = undefined;
+        } else {
+          // User cleared the definition - clear all definition-related fields
+          (validatedData as any).definitionSource = undefined;
+          (validatedData as any).apiProvider = undefined;
+          (validatedData as any).apiLookupStatus = undefined;
+          (validatedData as any).apiLookupAttemptedAt = undefined;
+        }
+      }
+    }
+
     // Update entry in database
     const updatedEntry: Entry = {
       ...existingEntry,

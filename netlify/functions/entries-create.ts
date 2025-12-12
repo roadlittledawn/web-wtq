@@ -134,6 +134,12 @@ const createEntryHandler = async (
         };
       }
     }
+
+    // Set definitionSource for word entries with manual definitions
+    if (validatedData.type === "word" && validatedData.definition) {
+      // User provided a definition - mark it as manually entered
+      (validatedData as any).definitionSource = "manual";
+    }
     const entriesCollection = db.collection<Entry>("entries");
 
     // Check if slug already exists
