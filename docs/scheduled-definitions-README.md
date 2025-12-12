@@ -34,16 +34,16 @@ DEF_RETRY_ERROR_DAYS=7
 Run the migration script to populate definitions for existing entries:
 
 ```bash
-# The script automatically loads .env variables via dotenv
+# IMPORTANT: Set MONGODB_URI environment variable when running
 
 # Dry run first (no DB writes)
-npx tsx scripts/migrate-definitions.ts --dry-run --limit 10
+MONGODB_URI="your-connection-string" npx tsx scripts/migrate-definitions.ts --dry-run --limit 10
 
 # Run on first 100 entries
-npx tsx scripts/migrate-definitions.ts --limit 100
+MONGODB_URI="your-connection-string" npx tsx scripts/migrate-definitions.ts --limit 100
 
 # Run on ALL entries (may take a while)
-npx tsx scripts/migrate-definitions.ts
+MONGODB_URI="your-connection-string" npx tsx scripts/migrate-definitions.ts
 ```
 
 ### 3. Deploy

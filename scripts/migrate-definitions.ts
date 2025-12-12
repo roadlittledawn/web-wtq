@@ -1,21 +1,6 @@
 #!/usr/bin/env tsx
 
-// IMPORTANT: Load .env BEFORE any other imports
-// This ensures MONGODB_URI is available when mongodb.ts is imported
-import { config } from "dotenv";
 import * as path from "path";
-
-// Load .env from project root
-const envPath = path.join(process.cwd(), ".env");
-const result = config({ path: envPath });
-
-// Debug: verify .env was loaded
-if (result.error) {
-  console.error("Error loading .env file:", result.error);
-  console.error("Tried to load from:", envPath);
-  process.exit(1);
-}
-console.log(`Loaded .env from: ${envPath}`);
 
 /**
  * Definition Migration Script
@@ -25,7 +10,7 @@ console.log(`Loaded .env from: ${envPath}`);
  * 2. Fetch missing definitions from external API
  *
  * Usage:
- *   npx tsx scripts/migrate-definitions.ts [options]
+ *   MONGODB_URI="your-connection-string" npx tsx scripts/migrate-definitions.ts [options]
  *
  * Options:
  *   --dry-run         Preview changes without writing to database
