@@ -115,12 +115,15 @@ export async function updateDefinitions(
       {
         $or: [
           { definitionSource: { $exists: false } },
-          { definitionSource: "api" },
+          { definitionSource: "api" as const },
         ],
       },
       // Must not have a definition
       {
-        $or: [{ definition: { $exists: false } }, { definition: null }],
+        $or: [
+          { definition: { $exists: false } },
+          { definition: { $eq: null } as any },
+        ],
       },
       // Never attempted OR retry period passed
       {
@@ -130,13 +133,13 @@ export async function updateDefinitions(
 
           // Not found but retry period passed
           {
-            apiLookupStatus: "not_found",
+            apiLookupStatus: "not_found" as const,
             apiLookupAttemptedAt: { $lt: ninetyDaysAgo },
           },
 
           // Error - retry sooner
           {
-            apiLookupStatus: "error",
+            apiLookupStatus: "error" as const,
             apiLookupAttemptedAt: { $lt: sevenDaysAgo },
           },
         ],
@@ -174,9 +177,9 @@ export async function updateDefinitions(
           {
             $set: {
               definition,
-              definitionSource: "api",
+              definitionSource: "api" as const,
               apiProvider: adapter.getName(),
-              apiLookupStatus: "found",
+              apiLookupStatus: "found" as const,
               apiLookupAttemptedAt: new Date(),
               updatedAt: new Date(),
             },
@@ -191,7 +194,7 @@ export async function updateDefinitions(
           { _id: entry._id },
           {
             $set: {
-              apiLookupStatus: "not_found",
+              apiLookupStatus: "not_found" as const,
               apiLookupAttemptedAt: new Date(),
               updatedAt: new Date(),
             },
@@ -214,7 +217,7 @@ export async function updateDefinitions(
           { _id: entry._id },
           {
             $set: {
-              apiLookupStatus: "error",
+              apiLookupStatus: "error" as const,
               apiLookupAttemptedAt: new Date(),
               updatedAt: new Date(),
             },

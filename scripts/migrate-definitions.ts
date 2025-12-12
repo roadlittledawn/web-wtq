@@ -85,7 +85,7 @@ async function backfillManualDefinitions(): Promise<{
   // Find word entries with definitions but no definitionSource
   const query = {
     type: "word" as const,
-    definition: { $exists: true, $ne: null },
+    definition: { $exists: true, $ne: null } as any,
     definitionSource: { $exists: false },
   };
 
@@ -119,7 +119,7 @@ async function backfillManualDefinitions(): Promise<{
   // Update all entries to mark as manual
   const result = await db.collection<WordEntry>("entries").updateMany(query, {
     $set: {
-      definitionSource: "manual",
+      definitionSource: "manual" as const,
       updatedAt: new Date(),
     },
   });
@@ -147,16 +147,19 @@ async function fetchMissingDefinitions(): Promise<MigrationResult["phase2"]> {
       {
         $or: [
           { definitionSource: { $exists: false } },
-          { definitionSource: "api" },
+          { definitionSource: "api" as const },
         ],
       },
       {
-        $or: [{ definition: { $exists: false } }, { definition: null }],
+        $or: [
+          { definition: { $exists: false } },
+          { definition: { $eq: null } as any },
+        ],
       },
       {
         $or: [
           { apiLookupStatus: { $exists: false } },
-          { apiLookupStatus: { $nin: ["found", "not_found"] } },
+          { apiLookupStatus: { $nin: ["found" as const, "not_found" as const] } },
         ],
       },
     ],
