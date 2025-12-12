@@ -18,8 +18,12 @@
  *
  * Examples:
  *   npx tsx scripts/migrate-definitions.ts --dry-run --limit 10
- *   MONGODB_URI="..." npx tsx scripts/migrate-definitions.ts
+ *   npx tsx scripts/migrate-definitions.ts
  */
+
+// Load environment variables from .env file
+import { config } from "dotenv";
+config();
 
 import { getDatabase, closeConnection } from "../lib/mongodb";
 import { updateDefinitions } from "../lib/definition-updater";

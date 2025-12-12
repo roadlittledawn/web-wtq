@@ -34,6 +34,8 @@ DEF_RETRY_ERROR_DAYS=7
 Run the migration script to populate definitions for existing entries:
 
 ```bash
+# The script automatically loads .env variables via dotenv
+
 # Dry run first (no DB writes)
 npx tsx scripts/migrate-definitions.ts --dry-run --limit 10
 
