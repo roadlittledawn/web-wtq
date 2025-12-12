@@ -3,7 +3,19 @@
 // IMPORTANT: Load .env BEFORE any other imports
 // This ensures MONGODB_URI is available when mongodb.ts is imported
 import { config } from "dotenv";
-config();
+import * as path from "path";
+
+// Load .env from project root
+const envPath = path.join(process.cwd(), ".env");
+const result = config({ path: envPath });
+
+// Debug: verify .env was loaded
+if (result.error) {
+  console.error("Error loading .env file:", result.error);
+  console.error("Tried to load from:", envPath);
+  process.exit(1);
+}
+console.log(`Loaded .env from: ${envPath}`);
 
 /**
  * Definition Migration Script
@@ -31,7 +43,6 @@ import { getDatabase, closeConnection } from "../lib/mongodb";
 import { updateDefinitions } from "../lib/definition-updater";
 import type { WordEntry } from "../types/models";
 import * as fs from "fs";
-import * as path from "path";
 
 // Parse command-line arguments
 const args = process.argv.slice(2);
