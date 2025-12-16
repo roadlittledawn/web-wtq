@@ -134,12 +134,12 @@ import MarkdownEditor from "@/components/MarkdownEditor";
 
 Currently, Markdown formatting is supported in the following fields:
 
-| Entry Type | Field |
-|------------|-------|
-| Word | notes |
-| Phrase | notes |
-| Quote | notes |
-| Hypothetical | notes |
+| Entry Type | Fields |
+|------------|--------|
+| Word | definition, notes |
+| Phrase | body, notes |
+| Quote | body, notes |
+| Hypothetical | body, notes |
 
 ## Testing
 

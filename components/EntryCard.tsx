@@ -43,7 +43,9 @@ export default function EntryCard({ entry }: EntryCardProps) {
                 </span>
               )}
               <div className="mt-2">
-                <p className="text-dark-text inline">{entry.definition}</p>
+                <div className="text-dark-text inline">
+                  <MarkdownRenderer content={entry.definition || ""} />
+                </div>
                 {entry.definition && (
                   <DefinitionSourceBadge entry={entry} className="ml-2" />
                 )}
@@ -67,9 +69,11 @@ export default function EntryCard({ entry }: EntryCardProps) {
           {entry.type === "phrase" && (
             <>
               <h3 className="text-2xl font-bold text-dark-text">
-                {entry.body}
+                <MarkdownRenderer content={entry.body || ""} />
               </h3>
-              <p className="mt-2 text-dark-text">{entry.definition}</p>
+              <div className="mt-2 text-dark-text">
+                <MarkdownRenderer content={entry.definition || ""} />
+              </div>
               {entry.source && (
                 <p className="mt-2 text-sm text-dark-text-secondary">
                   <span className="font-semibold text-accent-teal">
@@ -92,7 +96,7 @@ export default function EntryCard({ entry }: EntryCardProps) {
                 {entry.name}
               </h3>
               <blockquote className="mt-3 pl-4 border-l-4 border-accent-pink text-dark-text italic">
-                {entry.body}
+                <MarkdownRenderer content={entry.body || ""} />
               </blockquote>
               <p className="mt-2 text-dark-text-secondary">
                 <span className="font-semibold text-accent-teal">
@@ -115,7 +119,9 @@ export default function EntryCard({ entry }: EntryCardProps) {
               <h3 className="text-xl font-semibold text-dark-text mb-2">
                 Hypothetical
               </h3>
-              <p className="text-dark-text">{entry.body}</p>
+              <div className="text-dark-text">
+                <MarkdownRenderer content={entry.body || ""} />
+              </div>
               {entry.source && (
                 <p className="mt-2 text-sm text-dark-text-secondary">
                   <span className="font-semibold text-accent-teal">

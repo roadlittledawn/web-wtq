@@ -39,7 +39,7 @@ export default function QuoteCard({ entry }: QuoteCardProps) {
           )}
 
           <blockquote className="pl-4 border-l-4 border-accent-purple text-dark-text italic mb-3">
-            {entry.body}
+            <MarkdownRenderer content={entry.body || ""} />
           </blockquote>
 
           <p className="text-dark-text-secondary">
