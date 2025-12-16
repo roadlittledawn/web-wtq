@@ -137,7 +137,7 @@ Currently, Markdown formatting is supported in the following fields:
 | Entry Type | Fields |
 |------------|--------|
 | Word | definition, notes |
-| Phrase | body, notes |
+| Phrase | body, definition, notes |
 | Quote | body, notes |
 | Hypothetical | body, notes |
 
