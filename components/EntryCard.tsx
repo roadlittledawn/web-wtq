@@ -68,9 +68,9 @@ export default function EntryCard({ entry }: EntryCardProps) {
 
           {entry.type === "phrase" && (
             <>
-              <h3 className="text-2xl font-bold text-dark-text">
+              <div className="text-2xl font-bold text-dark-text">
                 <MarkdownRenderer content={entry.body || ""} />
-              </h3>
+              </div>
               <div className="mt-2 text-dark-text">
                 <MarkdownRenderer content={entry.definition || ""} />
               </div>
