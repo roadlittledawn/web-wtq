@@ -9,6 +9,7 @@ interface MarkdownEditorProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   disabled?: boolean;
+  showToolbar?: boolean;
   rows?: number;
   placeholder?: string;
   className?: string;
@@ -28,6 +29,7 @@ export default function MarkdownEditor({
   value,
   onChange,
   disabled = false,
+  showToolbar = true,
   rows = 3,
   placeholder = "",
   className = "",
@@ -82,7 +84,8 @@ export default function MarkdownEditor({
       // Set cursor position after the inserted text
       setTimeout(() => {
         textarea.focus();
-        const cursorPos = start + before.length + textToInsert.length + after.length;
+        const cursorPos =
+          start + before.length + textToInsert.length + after.length;
         textarea.setSelectionRange(cursorPos, cursorPos);
       }, 0);
     },
@@ -90,15 +93,51 @@ export default function MarkdownEditor({
   );
 
   const toolbarButtons = [
-    { label: "B", title: "Bold", action: () => insertMarkdown("**", "**", "bold text") },
-    { label: "I", title: "Italic", action: () => insertMarkdown("*", "*", "italic text") },
-    { label: "H", title: "Heading", action: () => insertMarkdown("## ", "", "heading") },
-    { label: "—", title: "Strikethrough", action: () => insertMarkdown("~~", "~~", "strikethrough") },
-    { label: "•", title: "Bullet List", action: () => insertMarkdown("\n- ", "", "list item") },
-    { label: "1.", title: "Numbered List", action: () => insertMarkdown("\n1. ", "", "list item") },
-    { label: "<>", title: "Code", action: () => insertMarkdown("`", "`", "code") },
-    { label: "🔗", title: "Link", action: () => insertMarkdown("[", "](url)", "link text") },
-    { label: "❝", title: "Quote", action: () => insertMarkdown("\n> ", "", "quote") },
+    {
+      label: "B",
+      title: "Bold",
+      action: () => insertMarkdown("**", "**", "bold text"),
+    },
+    {
+      label: "I",
+      title: "Italic",
+      action: () => insertMarkdown("*", "*", "italic text"),
+    },
+    {
+      label: "H",
+      title: "Heading",
+      action: () => insertMarkdown("## ", "", "heading"),
+    },
+    {
+      label: "—",
+      title: "Strikethrough",
+      action: () => insertMarkdown("~~", "~~", "strikethrough"),
+    },
+    {
+      label: "•",
+      title: "Bullet List",
+      action: () => insertMarkdown("\n- ", "", "list item"),
+    },
+    {
+      label: "1.",
+      title: "Numbered List",
+      action: () => insertMarkdown("\n1. ", "", "list item"),
+    },
+    {
+      label: "<>",
+      title: "Code",
+      action: () => insertMarkdown("`", "`", "code"),
+    },
+    {
+      label: "🔗",
+      title: "Link",
+      action: () => insertMarkdown("[", "](url)", "link text"),
+    },
+    {
+      label: "❝",
+      title: "Quote",
+      action: () => insertMarkdown("\n> ", "", "quote"),
+    },
   ];
 
   return (
@@ -106,18 +145,19 @@ export default function MarkdownEditor({
       {/* Toolbar */}
       <div className="flex items-center justify-between mb-1 flex-wrap gap-1">
         <div className="flex items-center gap-1">
-          {toolbarButtons.map((btn) => (
-            <button
-              key={btn.title}
-              type="button"
-              title={btn.title}
-              onClick={btn.action}
-              disabled={disabled || showPreview}
-              className="px-2 py-1 text-xs bg-dark-bg-tertiary border border-dark-border rounded hover:bg-dark-border disabled:opacity-50 disabled:cursor-not-allowed text-dark-text font-mono"
-            >
-              {btn.label}
-            </button>
-          ))}
+          {showToolbar &&
+            toolbarButtons.map((btn) => (
+              <button
+                key={btn.title}
+                type="button"
+                title={btn.title}
+                onClick={btn.action}
+                disabled={disabled || showPreview}
+                className="px-2 py-1 text-xs bg-dark-bg-tertiary border border-dark-border rounded hover:bg-dark-border disabled:opacity-50 disabled:cursor-not-allowed text-dark-text font-mono"
+              >
+                {btn.label}
+              </button>
+            ))}
         </div>
         <button
           type="button"
@@ -141,9 +181,14 @@ export default function MarkdownEditor({
           style={{ minHeight: `${rows * 24}px` }}
         >
           {value ? (
-            <MarkdownRenderer content={value} className="text-sm text-dark-text-secondary" />
+            <MarkdownRenderer
+              content={value}
+              className="text-sm text-dark-text-secondary"
+            />
           ) : (
-            <p className="text-dark-text-muted italic text-sm">No content to preview</p>
+            <p className="text-dark-text-muted italic text-sm">
+              No content to preview
+            </p>
           )}
         </div>
       ) : (
@@ -165,7 +210,8 @@ export default function MarkdownEditor({
 
       {/* Markdown help hint */}
       <p className="text-xs text-dark-text-muted mt-1">
-        Supports Markdown: **bold**, *italic*, `code`, [links](url), lists, and more.
+        Supports Markdown: **bold**, *italic*, `code`, [links](url), lists, and
+        more.
       </p>
     </div>
   );

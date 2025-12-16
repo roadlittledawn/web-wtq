@@ -22,6 +22,14 @@ select {
   border-color: #30363d;
 }
 
+form div label {
+  margin: 0 0 0.5em 0;
+}
+
+form div > * {
+  margin: 1em 0;
+}
+
 textarea:focus,
 input:focus,
 select:focus {

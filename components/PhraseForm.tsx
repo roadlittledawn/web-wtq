@@ -171,6 +171,7 @@ export default function PhraseForm({
           value={formData.body}
           onChange={handleChange}
           disabled={isSubmitting}
+          showToolbar={false}
           rows={2}
           placeholder="Enter the phrase with Markdown formatting..."
           error={errors.body}
