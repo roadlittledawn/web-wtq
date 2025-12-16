@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeAll } from "vitest";
-import { render, screen } from "@testing-library/react";
 
 // Set environment variable before any imports
 beforeAll(() => {
@@ -26,7 +25,7 @@ const localStorageMock = {
   removeItem: vi.fn(),
   clear: vi.fn(),
 };
-global.localStorage = localStorageMock as any;
+global.localStorage = localStorageMock as unknown as Storage;
 
 describe("Frontend Checkpoint - Component Imports", () => {
   it("should import all public layout components without errors", async () => {

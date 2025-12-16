@@ -30,7 +30,6 @@ export default function DefinitionSourceBadge({
   }
 
   const isManual = entry.definitionSource === "manual";
-  const isAPI = entry.definitionSource === "api";
 
   // Determine badge appearance based on source
   const badgeClasses = isManual

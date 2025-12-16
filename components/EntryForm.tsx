@@ -265,8 +265,8 @@ export default function EntryForm({
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDelete}
         entryTitle={
-          (initialData as any)?.name ||
-          (initialData as any)?.body?.substring(0, 50) ||
+          (initialData as { name?: string; body?: string })?.name ||
+          (initialData as { name?: string; body?: string })?.body?.substring(0, 50) ||
           "this entry"
         }
         isDeleting={isDeleting}
