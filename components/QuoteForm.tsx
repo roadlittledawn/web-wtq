@@ -5,6 +5,7 @@ import SlugInput from "./SlugInput";
 import TagInput from "./TagInput";
 import AuthorSelect from "./AuthorSelect";
 import SuggestedTags from "./SuggestedTags";
+import MarkdownEditor from "./MarkdownEditor";
 import { QuoteEntry } from "@/types/models";
 
 interface QuoteFormProps {
@@ -288,14 +289,14 @@ export default function QuoteForm({
           >
             Notes
           </label>
-          <textarea
+          <MarkdownEditor
             id="notes"
             name="notes"
-            value={formData.notes}
+            value={formData.notes || ""}
             onChange={handleChange}
             disabled={isSubmitting}
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+            placeholder="Add notes with Markdown formatting..."
           />
         </div>
 

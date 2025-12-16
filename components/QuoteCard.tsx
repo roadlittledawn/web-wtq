@@ -2,6 +2,7 @@
 
 import { QuoteEntry } from "@/types/models";
 import EditButton from "./EditButton";
+import MarkdownRenderer from "./MarkdownRenderer";
 import { useState, useEffect } from "react";
 
 interface QuoteCardProps {
@@ -49,9 +50,9 @@ export default function QuoteCard({ entry }: QuoteCardProps) {
           </p>
 
           {entry.notes && (
-            <p className="mt-2 text-sm text-dark-text-secondary">
-              {entry.notes}
-            </p>
+            <div className="mt-2 text-sm text-dark-text-secondary">
+              <MarkdownRenderer content={entry.notes} />
+            </div>
           )}
         </div>
 

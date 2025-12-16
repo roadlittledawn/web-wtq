@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import SlugInput from "./SlugInput";
 import TagInput from "./TagInput";
+import MarkdownEditor from "./MarkdownEditor";
 import { WordEntry } from "@/types/models";
 
 interface WordFormProps {
@@ -222,14 +223,14 @@ export default function WordForm({
         >
           Notes
         </label>
-        <textarea
+        <MarkdownEditor
           id="notes"
           name="notes"
-          value={formData.notes}
+          value={formData.notes || ""}
           onChange={handleChange}
           disabled={isSubmitting}
           rows={3}
-          className="w-full px-3 py-2 bg-dark-bg-secondary border-2 border-dark-border rounded-md focus:outline-none focus:border-accent-teal text-dark-text disabled:bg-dark-bg-tertiary disabled:text-dark-text-muted"
+          placeholder="Add notes with Markdown formatting..."
         />
       </div>
 

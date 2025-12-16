@@ -3,6 +3,7 @@
 import { Entry } from "@/types/models";
 import EditButton from "./EditButton";
 import DefinitionSourceBadge from "./DefinitionSourceBadge";
+import MarkdownRenderer from "./MarkdownRenderer";
 import { useState, useEffect } from "react";
 
 interface EntryCardProps {
@@ -56,9 +57,9 @@ export default function EntryCard({ entry }: EntryCardProps) {
                 </p>
               )}
               {entry.notes && (
-                <p className="mt-2 text-sm text-dark-text-secondary">
-                  {entry.notes}
-                </p>
+                <div className="mt-2 text-sm text-dark-text-secondary">
+                  <MarkdownRenderer content={entry.notes} />
+                </div>
               )}
             </>
           )}
@@ -78,9 +79,9 @@ export default function EntryCard({ entry }: EntryCardProps) {
                 </p>
               )}
               {entry.notes && (
-                <p className="mt-2 text-sm text-dark-text-secondary">
-                  {entry.notes}
-                </p>
+                <div className="mt-2 text-sm text-dark-text-secondary">
+                  <MarkdownRenderer content={entry.notes} />
+                </div>
               )}
             </>
           )}
@@ -102,9 +103,9 @@ export default function EntryCard({ entry }: EntryCardProps) {
                 )}
               </p>
               {entry.notes && (
-                <p className="mt-2 text-sm text-dark-text-secondary">
-                  {entry.notes}
-                </p>
+                <div className="mt-2 text-sm text-dark-text-secondary">
+                  <MarkdownRenderer content={entry.notes} />
+                </div>
               )}
             </>
           )}
@@ -124,9 +125,9 @@ export default function EntryCard({ entry }: EntryCardProps) {
                 </p>
               )}
               {entry.notes && (
-                <p className="mt-2 text-sm text-dark-text-secondary">
-                  {entry.notes}
-                </p>
+                <div className="mt-2 text-sm text-dark-text-secondary">
+                  <MarkdownRenderer content={entry.notes} />
+                </div>
               )}
             </>
           )}
