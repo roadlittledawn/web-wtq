@@ -3,7 +3,7 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import DOMPurify from "dompurify";
+import DOMPurify from "isomorphic-dompurify";
 import { useMemo } from "react";
 
 interface MarkdownRendererProps {
@@ -23,11 +23,8 @@ export default function MarkdownRenderer({
   className = "",
 }: MarkdownRendererProps) {
   // Sanitize content before rendering to prevent XSS
+  // Uses isomorphic-dompurify which works on both server and client
   const sanitizedContent = useMemo(() => {
-    if (typeof window === "undefined") {
-      // Server-side: return content as-is (will be sanitized on client)
-      return content;
-    }
     return DOMPurify.sanitize(content);
   }, [content]);
 

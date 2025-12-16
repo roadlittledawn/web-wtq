@@ -7,8 +7,8 @@ beforeAll(() => {
   process.env.MONGODB_URI = "mongodb://test:27017/test";
 });
 
-// Mock DOMPurify for server-side testing
-vi.mock("dompurify", () => ({
+// Mock isomorphic-dompurify for testing
+vi.mock("isomorphic-dompurify", () => ({
   default: {
     sanitize: (content: string) => content,
   },

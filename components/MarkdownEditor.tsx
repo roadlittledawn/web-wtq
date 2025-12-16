@@ -51,13 +51,31 @@ export default function MarkdownEditor({
         after +
         value.substring(end);
 
-      // Create a synthetic event to trigger onChange
+      // Create a synthetic event that matches React's ChangeEvent interface
       const syntheticEvent = {
         target: {
           name,
           value: newValue,
+          id,
+          type: "textarea",
         },
-      } as React.ChangeEvent<HTMLTextAreaElement>;
+        currentTarget: {
+          name,
+          value: newValue,
+          id,
+          type: "textarea",
+        },
+        preventDefault: () => {},
+        stopPropagation: () => {},
+        nativeEvent: new Event("change"),
+        bubbles: true,
+        cancelable: false,
+        defaultPrevented: false,
+        eventPhase: 0,
+        isTrusted: false,
+        timeStamp: Date.now(),
+        type: "change",
+      } as unknown as React.ChangeEvent<HTMLTextAreaElement>;
 
       onChange(syntheticEvent);
 
@@ -117,9 +135,10 @@ export default function MarkdownEditor({
       {/* Editor or Preview */}
       {showPreview ? (
         <div
-          className={`w-full px-3 py-2 bg-dark-bg-secondary border-2 rounded-md min-h-[${rows * 24}px] ${
+          className={`w-full px-3 py-2 bg-dark-bg-secondary border-2 rounded-md ${
             error ? "border-accent-pink" : "border-dark-border"
           }`}
+          style={{ minHeight: `${rows * 24}px` }}
         >
           {value ? (
             <MarkdownRenderer content={value} className="text-sm text-dark-text-secondary" />
