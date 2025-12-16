@@ -167,7 +167,7 @@ export default function SearchResults({
           {query && (
             <>
               {" "}
-              for <span className="font-semibold">"{query}"</span>
+              for <span className="font-semibold">&quot;{query}&quot;</span>
             </>
           )}
         </p>

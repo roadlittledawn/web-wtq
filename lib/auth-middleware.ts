@@ -5,7 +5,7 @@ interface ErrorResponse {
   error: {
     code: string;
     message: string;
-    details?: any;
+    details?: Record<string, unknown>;
   };
 }
 
@@ -47,6 +47,7 @@ function extractToken(event: HandlerEvent): string | null {
  * Requirements: 11.1, 11.2, 11.3, 11.4
  */
 export function withAuth(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handler: (event: AuthenticatedEvent, context: HandlerContext) => Promise<any>
 ): Handler {
   return async (event: HandlerEvent, context: HandlerContext) => {
@@ -71,12 +72,12 @@ export function withAuth(
       }
 
       // Verify and decode token
-      let decoded: any;
+      let decoded: { userId: string; username: string };
       try {
-        decoded = verifyToken(token);
-      } catch (error: any) {
+        decoded = verifyToken(token) as { userId: string; username: string };
+      } catch (error: unknown) {
         // Handle expired token
-        if (error.name === "TokenExpiredError") {
+        if (error instanceof Error && error.name === "TokenExpiredError") {
           return {
             statusCode: 401,
             body: JSON.stringify({

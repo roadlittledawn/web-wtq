@@ -40,15 +40,6 @@ interface FreeDictionaryResponse {
   sourceUrls?: string[];
 }
 
-/**
- * Error response when word is not found
- */
-interface FreeDictionaryErrorResponse {
-  title: string;
-  message: string;
-  resolution: string;
-}
-
 export class FreeDictionaryAdapter implements DefinitionAdapter {
   private readonly baseUrl = "https://api.dictionaryapi.dev/api/v2/entries/en";
 

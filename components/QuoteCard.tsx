@@ -21,7 +21,7 @@ export default function QuoteCard({ entry }: QuoteCardProps) {
         const expirationTime = payload.exp * 1000;
         const currentTime = Date.now();
         setIsAuthenticated(currentTime < expirationTime);
-      } catch (error) {
+      } catch {
         setIsAuthenticated(false);
       }
     }

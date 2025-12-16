@@ -101,7 +101,7 @@ export default function DeleteConfirmationModal({
                 <p className="text-sm text-gray-500">
                   Are you sure you want to delete{" "}
                   <span className="font-semibold text-gray-700">
-                    "{entryTitle}"
+                    &quot;{entryTitle}&quot;
                   </span>
                   ? This action cannot be undone.
                 </p>

@@ -94,7 +94,7 @@ export default function Home() {
             Clinton Lexicon
           </h1>
           <p className="text-xl md:text-2xl text-dark-text-secondary max-w-2xl mx-auto leading-relaxed">
-            I'm Clinton and I'm a logophile. These are a few of my favorite
+            I&apos;m Clinton and I&apos;m a logophile. These are a few of my favorite
             things.
           </p>
         </div>

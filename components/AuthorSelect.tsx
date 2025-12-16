@@ -129,7 +129,7 @@ export default function AuthorSelect({
       ? {
           label: value,
           value: value,
-          author: null as any,
+          author: null as unknown as Author,
         }
       : null);
 
@@ -156,7 +156,7 @@ export default function AuthorSelect({
     const newOption: AuthorOption = {
       label: `${inputValue} (new author)`,
       value: inputValue,
-      author: null as any,
+      author: null as unknown as Author,
     };
 
     // Add to options temporarily

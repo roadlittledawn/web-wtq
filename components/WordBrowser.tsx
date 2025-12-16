@@ -18,7 +18,6 @@ interface WordsByLetter {
 
 export default function WordBrowser({
   selectedLetter,
-  onLetterChange,
 }: WordBrowserProps) {
   const [words, setWords] = useState<WordEntry[]>([]);
   const [groupedWords, setGroupedWords] = useState<WordsByLetter>({});
