@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import jwt, { SignOptions } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 const SALT_ROUNDS = 12;
 const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-for-development";
@@ -44,6 +44,6 @@ export function generateToken(payload: object): string {
  * @returns The decoded token payload
  * @throws Error if token is invalid or expired
  */
-export function verifyToken(token: string): any {
-  return jwt.verify(token, JWT_SECRET);
+export function verifyToken(token: string): { userId: string; username: string } {
+  return jwt.verify(token, JWT_SECRET) as { userId: string; username: string };
 }

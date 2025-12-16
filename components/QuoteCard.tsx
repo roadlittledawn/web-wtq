@@ -2,6 +2,7 @@
 
 import { QuoteEntry } from "@/types/models";
 import EditButton from "./EditButton";
+import MarkdownRenderer from "./MarkdownRenderer";
 import { useState, useEffect } from "react";
 
 interface QuoteCardProps {
@@ -20,7 +21,7 @@ export default function QuoteCard({ entry }: QuoteCardProps) {
         const expirationTime = payload.exp * 1000;
         const currentTime = Date.now();
         setIsAuthenticated(currentTime < expirationTime);
-      } catch (error) {
+      } catch {
         setIsAuthenticated(false);
       }
     }
@@ -38,7 +39,7 @@ export default function QuoteCard({ entry }: QuoteCardProps) {
           )}
 
           <blockquote className="pl-4 border-l-4 border-accent-purple text-dark-text italic mb-3">
-            {entry.body}
+            <MarkdownRenderer content={entry.body || ""} />
           </blockquote>
 
           <p className="text-dark-text-secondary">
@@ -49,9 +50,9 @@ export default function QuoteCard({ entry }: QuoteCardProps) {
           </p>
 
           {entry.notes && (
-            <p className="mt-2 text-sm text-dark-text-secondary">
-              {entry.notes}
-            </p>
+            <div className="mt-2 text-sm text-dark-text-secondary">
+              <MarkdownRenderer content={entry.notes} />
+            </div>
           )}
         </div>
 

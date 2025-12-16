@@ -17,6 +17,7 @@ let clientPromise: Promise<MongoClient>;
 // In development mode, use a global variable to preserve the connection
 // across hot reloads in Next.js
 declare global {
+  // eslint-disable-next-line no-var
   var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 

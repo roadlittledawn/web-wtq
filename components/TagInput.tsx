@@ -39,7 +39,7 @@ export default function TagInput({
           const response = await fetch("/.netlify/functions/tags");
           if (response.ok) {
             const data = await response.json();
-            const tagOptions = data.tags.map((tag: any) => ({
+            const tagOptions = data.tags.map((tag: { name: string }) => ({
               label: tag.name,
               value: tag.name,
             }));
@@ -61,7 +61,7 @@ export default function TagInput({
         );
         if (response.ok) {
           const data = await response.json();
-          const tagOptions = data.tags.map((tag: any) => ({
+          const tagOptions = data.tags.map((tag: { name: string }) => ({
             label: tag.name,
             value: tag.name,
           }));

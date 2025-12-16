@@ -20,6 +20,7 @@ export async function isSlugUnique(
     const entriesCollection = db.collection("entries");
 
     // Build query to check for existing slug
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const query: any = { slug };
 
     // If excludeId is provided, exclude that entry from the check

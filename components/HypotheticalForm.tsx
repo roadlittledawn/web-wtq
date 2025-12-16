@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import SlugInput from "./SlugInput";
 import TagInput from "./TagInput";
+import MarkdownEditor from "./MarkdownEditor";
 import { HypotheticalEntry } from "@/types/models";
 
 interface HypotheticalFormProps {
@@ -112,19 +113,15 @@ export default function HypotheticalForm({
         >
           Hypothetical Scenario <span className="text-red-500">*</span>
         </label>
-        <textarea
+        <MarkdownEditor
           id="body"
           name="body"
           value={formData.body}
           onChange={handleChange}
           disabled={isSubmitting}
           rows={5}
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-            errors.body
-              ? "border-red-300 focus:ring-red-500"
-              : "border-gray-300 focus:ring-blue-500"
-          } disabled:bg-gray-100`}
-          placeholder="Describe the hypothetical scenario..."
+          placeholder="Describe the hypothetical scenario with Markdown formatting..."
+          error={errors.body}
         />
         {errors.body && (
           <p className="text-sm text-red-600 mt-1">{errors.body}</p>
@@ -166,14 +163,14 @@ export default function HypotheticalForm({
         >
           Notes
         </label>
-        <textarea
+        <MarkdownEditor
           id="notes"
           name="notes"
-          value={formData.notes}
+          value={formData.notes || ""}
           onChange={handleChange}
           disabled={isSubmitting}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          placeholder="Add notes with Markdown formatting..."
         />
       </div>
 

@@ -6,7 +6,6 @@
  * and error handling.
  */
 
-import type { Db } from "mongodb";
 import { getDatabase } from "./mongodb";
 import { getDefinitionAdapter } from "./definition-api/factory";
 import type { WordEntry } from "../types/models";
@@ -122,6 +121,7 @@ export async function updateDefinitions(
       {
         $or: [
           { definition: { $exists: false } },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           { definition: { $eq: null } as any },
         ],
       },

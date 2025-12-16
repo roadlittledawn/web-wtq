@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import SlugInput from "./SlugInput";
 import TagInput from "./TagInput";
+import MarkdownEditor from "./MarkdownEditor";
 import { WordEntry } from "@/types/models";
 
 interface WordFormProps {
@@ -154,18 +155,15 @@ export default function WordForm({
         >
           Definition <span className="text-accent-pink">*</span>
         </label>
-        <textarea
+        <MarkdownEditor
           id="definition"
           name="definition"
-          value={formData.definition}
+          value={formData.definition || ""}
           onChange={handleChange}
           disabled={isSubmitting}
           rows={3}
-          className={`w-full px-3 py-2 bg-dark-bg-secondary border-2 rounded-md focus:outline-none text-dark-text ${
-            errors.definition
-              ? "border-accent-pink focus:border-accent-pink"
-              : "border-dark-border focus:border-accent-teal"
-          } disabled:bg-dark-bg-tertiary disabled:text-dark-text-muted`}
+          placeholder="Enter definition with Markdown formatting..."
+          error={errors.definition}
         />
         {errors.definition && (
           <p className="text-sm text-accent-pink mt-1">{errors.definition}</p>
@@ -222,14 +220,14 @@ export default function WordForm({
         >
           Notes
         </label>
-        <textarea
+        <MarkdownEditor
           id="notes"
           name="notes"
-          value={formData.notes}
+          value={formData.notes || ""}
           onChange={handleChange}
           disabled={isSubmitting}
           rows={3}
-          className="w-full px-3 py-2 bg-dark-bg-secondary border-2 border-dark-border rounded-md focus:outline-none focus:border-accent-teal text-dark-text disabled:bg-dark-bg-tertiary disabled:text-dark-text-muted"
+          placeholder="Add notes with Markdown formatting..."
         />
       </div>
 
