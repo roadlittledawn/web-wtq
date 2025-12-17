@@ -43,11 +43,11 @@ export default function EntryCard({ entry }: EntryCardProps) {
                 </span>
               )}
               <div className="mt-2">
-                <div className="text-dark-text inline">
+                <div className="text-dark-text">
                   <MarkdownRenderer content={entry.definition || ""} />
                 </div>
                 {entry.definition && (
-                  <DefinitionSourceBadge entry={entry} className="ml-2" />
+                  <DefinitionSourceBadge entry={entry} className="mt-1 block" />
                 )}
               </div>
               {entry.etymology && (
