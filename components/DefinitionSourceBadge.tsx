@@ -1,14 +1,15 @@
 /**
  * Definition Source Badge Component
  *
- * Displays a badge indicating the source of a word's definition:
- * - Manual: User-entered definition
- * - API: Fetched from external dictionary API (e.g., Free Dictionary)
+ * Displays a subtle caption indicating the source of a word's definition:
+ * - Manual: User-entered definition (with edit icon)
+ * - API: Fetched from external dictionary API (with download-cloud icon)
  *
  * Only shown when a definition exists.
  */
 
 import type { WordEntry } from "@/types/models";
+import { FeatherIcon } from "@/components/icons";
 
 interface DefinitionSourceBadgeProps {
   entry: WordEntry;
@@ -31,32 +32,23 @@ export default function DefinitionSourceBadge({
 
   const isManual = entry.definitionSource === "manual";
 
-  // Determine badge appearance based on source
-  const badgeClasses = isManual
-    ? "bg-blue-100 text-blue-800 border-blue-300"
-    : "bg-green-100 text-green-800 border-green-300";
-
-  const icon = isManual ? "✍️" : "📚";
-
   const label = isManual
-    ? "Manual"
+    ? "Definition entered manually"
     : entry.apiProvider
-    ? `${entry.apiProvider}`
-    : "API";
+      ? `Definition sourced from ${entry.apiProvider}`
+      : "Definition sourced from external API";
 
   return (
     <span
-      className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full border ${badgeClasses} ${className}`}
-      title={
-        isManual
-          ? "Definition entered manually"
-          : `Definition fetched from ${entry.apiProvider || "external API"}`
-      }
+      className={`text-xs text-dark-text-muted inline-flex items-center ${className}`}
+      title={label}
     >
-      <span className="text-sm" aria-hidden="true">
-        {icon}
-      </span>
-      <span>{label}</span>
+      <FeatherIcon
+        name={isManual ? "edit-3" : "download-cloud"}
+        size="xs"
+        className="mr-1"
+      />
+      {label}
     </span>
   );
 }
