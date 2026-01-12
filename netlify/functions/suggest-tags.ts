@@ -124,7 +124,7 @@ export const handler: Handler = async (
     // Create AI prompt
     const prompt = `Analyze this ${
       request.type
-    } and suggest 3-6 relevant tags.${contextInfo}
+    } and suggest 3-6 relevant, diverse, and non-repetitive tags.${contextInfo}
 
 ${
   request.type === "quote"
@@ -137,17 +137,21 @@ ${
 IMPORTANT: Prefer using existing tags from this list when relevant:
 ${existingTagNames.join(", ")}
 
-Only suggest tags you're highly confident about. Consider these categories:
-- Topics/themes (e.g., politics, cats, philosophy, nature, technology)
-- Tone (e.g., funny, serious, ironic, sarcastic, motivating, insult)
-- Origin (e.g., French, Latin, Biblical, Shakespearean, modern)
-- Context (e.g., historical, academic, popular culture)
-- Style (e.g., metaphorical, rhetorical, literal)
+CRITICAL INSTRUCTIONS:
+1. PRIORITIZE identifying the literal topic, subject matter, or main theme (e.g., politics, cats, philosophy, nature, technology, ethics, science, history)
+2. Each tag should capture a DIFFERENT aspect - avoid redundancy or near-synonyms
+3. Ensure tags are DIVERSE and don't overlap in meaning
+4. Only suggest tags you're highly confident about
+
+Consider these categories IN ORDER OF PRIORITY:
+1. PRIMARY: Literal topics/subjects/themes - What is this actually about?
+2. SECONDARY: Tone/sentiment (e.g., funny, serious, ironic, sarcastic, motivating)
+3. TERTIARY: Origin/style (e.g., French, Latin, metaphorical, rhetorical) - only if highly relevant
 
 Return ONLY a valid JSON object in this exact format with no additional text:
 {"tags": ["tag1", "tag2", "tag3"]}
 
-Use lowercase for all tags. Maximum 6 tags. Only include tags you're confident about.`;
+Use lowercase for all tags. Maximum 6 tags. Prioritize quality and diversity over quantity.`;
 
     // Call Anthropic API
     const message = await anthropic.messages.create({
