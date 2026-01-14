@@ -124,7 +124,7 @@ export const handler: Handler = async (
     // Create AI prompt
     const prompt = `Analyze this ${
       request.type
-    } and suggest 3-6 relevant, diverse, and non-repetitive tags.${contextInfo}
+    } and suggest 4-10 relevant, diverse, and non-repetitive tags.${contextInfo}
 
 ${
   request.type === "quote"
@@ -138,20 +138,20 @@ IMPORTANT: Prefer using existing tags from this list when relevant:
 ${existingTagNames.join(", ")}
 
 CRITICAL INSTRUCTIONS:
-1. PRIORITIZE identifying the literal topic, subject matter, or main theme (e.g., politics, cats, philosophy, nature, technology, ethics, science, history)
-2. Each tag should capture a DIFFERENT aspect - avoid redundancy or near-synonyms
-3. Ensure tags are DIVERSE and don't overlap in meaning
+1. IDENTIFY SPECIFIC NOUNS AND CONCRETE SUBJECTS first - include specific people, places, things, or concepts mentioned (e.g., "Brooklyn", "mountains", "ocean", "cats", "politics")
+2. Include broader literal topics, themes, or subject matter (e.g., philosophy, nature, technology, ethics, science, history, travel)
+3. Each tag should capture a DIFFERENT aspect - avoid redundancy or near-synonyms
 4. Only suggest tags you're highly confident about
 
-Consider these categories IN ORDER OF PRIORITY:
-1. PRIMARY: Literal topics/subjects/themes - What is this actually about?
-2. SECONDARY: Tone/sentiment (e.g., funny, serious, ironic, sarcastic, motivating)
-3. TERTIARY: Origin/style (e.g., French, Latin, metaphorical, rhetorical) - only if highly relevant
+TAG DISTRIBUTION (aim for this breakdown):
+- PRIMARY (1-4 tags): Specific nouns, concrete subjects, and literal topics/themes - What/who is this actually about?
+- SECONDARY (1-2 tags): Tone/sentiment (e.g., funny, serious, ironic, sarcastic, motivating) - only if clear
+- TERTIARY (1-2 tags): Origin/style (e.g., French, Latin, metaphorical, rhetorical) - only if highly relevant
 
 Return ONLY a valid JSON object in this exact format with no additional text:
 {"tags": ["tag1", "tag2", "tag3"]}
 
-Use lowercase for all tags. Maximum 6 tags. Prioritize quality and diversity over quantity.`;
+Use lowercase for all tags. Aim for 6-10 tags when appropriate, focusing on specific nouns and concrete subjects.`;
 
     // Call Anthropic API
     const message = await anthropic.messages.create({
@@ -189,8 +189,8 @@ Use lowercase for all tags. Maximum 6 tags. Prioritize quality and diversity ove
       new Set(suggestedTags.map((tag) => tag.toLowerCase()))
     );
 
-    // Limit to 6 tags
-    suggestedTags = suggestedTags.slice(0, 6);
+    // Limit to 10 tags
+    suggestedTags = suggestedTags.slice(0, 10);
 
     return {
       statusCode: 200,
