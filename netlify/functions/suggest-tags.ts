@@ -151,7 +151,7 @@ TAG DISTRIBUTION (aim for this breakdown):
 Return ONLY a valid JSON object in this exact format with no additional text:
 {"tags": ["tag1", "tag2", "tag3"]}
 
-Use lowercase for all tags. Aim for 6-10 tags when appropriate, focusing on specific nouns and concrete subjects.`;
+Use lowercase for all tags. Aim for 4-10 tags when appropriate, focusing on specific nouns and concrete subjects.`;
 
     // Call Anthropic API
     const message = await anthropic.messages.create({
