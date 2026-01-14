@@ -108,6 +108,7 @@ export default function QuoteForm({
           type: "quote",
           author: formData.author || undefined,
           source: formData.source || undefined,
+          notes: formData.notes || undefined,
         }),
       });
 

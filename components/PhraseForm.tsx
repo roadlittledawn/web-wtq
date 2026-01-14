@@ -98,6 +98,8 @@ export default function PhraseForm({
           body: formData.body,
           type: "phrase",
           source: formData.source || undefined,
+          notes: formData.notes || undefined,
+          definition: formData.definition || undefined,
         }),
       });
 

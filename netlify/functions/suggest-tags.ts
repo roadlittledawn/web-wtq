@@ -16,6 +16,8 @@ interface SuggestTagsRequest {
   type: "quote" | "phrase" | "hypothetical";
   author?: string;
   source?: string;
+  notes?: string;
+  definition?: string;
 }
 
 interface SuggestTagsResponse {
@@ -120,11 +122,15 @@ export const handler: Handler = async (
     if (request.source) {
       contextInfo += `\nSource: ${request.source}`;
     }
+    if (request.notes) {
+      contextInfo += `\nNotes: ${request.notes}`;
+    }
+    if (request.type === "phrase" && request.definition) {
+      contextInfo += `\nDefinition: ${request.definition}`;
+    }
 
     // Create AI prompt
-    const prompt = `Analyze this ${
-      request.type
-    } and suggest 3-6 relevant tags.${contextInfo}
+    const prompt = `You are a precise tagging system. Your task is to generate highly specific and relevant tags for the following ${request.type}.${contextInfo}
 
 ${
   request.type === "quote"
@@ -134,20 +140,35 @@ ${
     : "Hypothetical"
 }: "${request.body}"
 
-IMPORTANT: Prefer using existing tags from this list when relevant:
+STEP 1 - IDENTIFY SPECIFIC NOUNS (REQUIRED):
+Look for and tag ANY specific nouns, proper nouns, places, people, or concrete objects mentioned:
+- Proper nouns: Brooklyn, Paris, Shakespeare, etc.
+- Common nouns: mountains, ocean, cats, trees, coffee, etc.
+- Abstract concepts that are clearly named: democracy, capitalism, love, etc.
+
+STEP 2 - BROADER TOPICS (if not covered by specific nouns):
+Add broader categorical tags ONLY if they add new information:
+- Subject areas: philosophy, politics, nature, technology, science, etc.
+- Activities: travel, cooking, sports, etc.
+
+STEP 3 - TONE/SENTIMENT (1-2 tags, only if very clear):
+- Examples: funny, serious, ironic, sarcastic, motivating, sad, uplifting
+
+STEP 4 - ORIGIN/STYLE (1-2 tags, only if highly relevant):
+- Examples: French, Latin, metaphorical, rhetorical, poetic
+
+EXISTING TAGS (use these when they match, but CREATE NEW TAGS for specific nouns not in this list):
 ${existingTagNames.join(", ")}
 
-Only suggest tags you're highly confident about. Consider these categories:
-- Topics/themes (e.g., politics, cats, philosophy, nature, technology)
-- Tone (e.g., funny, serious, ironic, sarcastic, motivating, insult)
-- Origin (e.g., French, Latin, Biblical, Shakespearean, modern)
-- Context (e.g., historical, academic, popular culture)
-- Style (e.g., metaphorical, rhetorical, literal)
+CRITICAL RULES:
+1. ALWAYS tag specific nouns mentioned in the text, even if they're not in the existing tags list
+2. Each tag must be distinct - no near-synonyms or redundant tags
+3. Prioritize precision over quantity
+4. Use lowercase for all tags
+5. Return 4-10 tags total
 
 Return ONLY a valid JSON object in this exact format with no additional text:
-{"tags": ["tag1", "tag2", "tag3"]}
-
-Use lowercase for all tags. Maximum 6 tags. Only include tags you're confident about.`;
+{"tags": ["tag1", "tag2", "tag3"]}`;
 
     // Call Anthropic API
     const message = await anthropic.messages.create({
@@ -185,8 +206,8 @@ Use lowercase for all tags. Maximum 6 tags. Only include tags you're confident a
       new Set(suggestedTags.map((tag) => tag.toLowerCase()))
     );
 
-    // Limit to 6 tags
-    suggestedTags = suggestedTags.slice(0, 6);
+    // Limit to 10 tags
+    suggestedTags = suggestedTags.slice(0, 10);
 
     return {
       statusCode: 200,
