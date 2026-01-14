@@ -96,6 +96,7 @@ export default function HypotheticalForm({
           body: formData.body,
           type: "hypothetical",
           source: formData.source || undefined,
+          notes: formData.notes || undefined,
         }),
       });
 
