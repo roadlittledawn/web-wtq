@@ -63,7 +63,25 @@ export class FreeDictionaryAdapter implements DefinitionAdapter {
     console.log(`[FreeDictionary] Fetching definition for: "${term}"`);
 
     try {
-      const response = await fetch(url);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+      let response: Response;
+      try {
+        response = await fetch(url, { signal: controller.signal });
+      } catch (fetchError) {
+        if (
+          fetchError instanceof Error &&
+          fetchError.name === "AbortError"
+        ) {
+          throw new Error(
+            `Free Dictionary API request timed out for "${term}" after 8 seconds`
+          );
+        }
+        throw fetchError;
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       // Handle 404 - word not found
       if (response.status === 404) {
