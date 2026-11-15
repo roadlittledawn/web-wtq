@@ -1,5 +1,12 @@
 import { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
-import { verifyToken } from "./auth";
+import {
+  ACCESS_COOKIE,
+  AccessClaims,
+  authSettings,
+  originOf,
+  readCookie,
+  verifyAccessToken,
+} from "./clang-auth";
 
 interface ErrorResponse {
   error: {
@@ -9,130 +16,116 @@ interface ErrorResponse {
   };
 }
 
+export interface AuthUser {
+  sub: string;
+  email: string;
+  name: string | null;
+  roles: string[];
+}
+
 export interface AuthenticatedEvent extends HandlerEvent {
-  user?: {
-    userId: string;
-    username: string;
+  user?: AuthUser;
+}
+
+/** Role required for every protected (admin) function. */
+export const ADMIN_ROLE = "admin";
+
+const STATE_CHANGING = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
+function errorResponse(statusCode: number, code: string, message: string) {
+  return {
+    statusCode,
+    body: JSON.stringify({ error: { code, message } } as ErrorResponse),
+    headers: { "Content-Type": "application/json" },
   };
 }
 
+function header(event: HandlerEvent, name: string): string | undefined {
+  return event.headers[name] ?? event.headers[name.toLowerCase()] ?? undefined;
+}
+
+export type AuthResult =
+  | { ok: true; claims: AccessClaims; roles: string[] }
+  | { ok: false; statusCode: 401 | 403; code: string; message: string };
+
 /**
- * Extract JWT token from Authorization header
- * @param event - Netlify function event
- * @returns The extracted token or null if not found
+ * Verify the clang-auth access-token cookie on a request. Doesn't check roles
+ * or the CSRF origin; `withAuth` does that.
  */
-function extractToken(event: HandlerEvent): string | null {
-  const authHeader = event.headers.authorization || event.headers.Authorization;
-
-  if (!authHeader) {
-    return null;
+export async function authenticate(event: HandlerEvent): Promise<AuthResult> {
+  const { authBaseUrl, appSlug } = authSettings();
+  const token = readCookie(header(event, "cookie"), ACCESS_COOKIE);
+  if (!token) {
+    return { ok: false, statusCode: 401, code: "UNAUTHENTICATED", message: "Sign-in required" };
   }
-
-  // Check if header follows "Bearer <token>" format
-  const parts = authHeader.split(" ");
-  if (parts.length !== 2 || parts[0] !== "Bearer") {
-    return null;
+  let claims: AccessClaims;
+  try {
+    claims = await verifyAccessToken(token, authBaseUrl);
+  } catch {
+    // Expired, forged, or signed by an unknown key: treat as signed out.
+    return { ok: false, statusCode: 401, code: "UNAUTHENTICATED", message: "Sign-in required" };
   }
-
-  return parts[1];
+  const roles = claims.apps[appSlug];
+  if (!Array.isArray(roles)) {
+    return { ok: false, statusCode: 403, code: "FORBIDDEN", message: "You don't have access to this app" };
+  }
+  return { ok: true, claims, roles };
 }
 
 /**
- * Middleware to verify JWT token and authenticate requests
- * Validates token from Authorization header and attaches user info to event
- *
- * @param handler - The handler function to wrap with authentication
- * @returns Wrapped handler that requires authentication
- *
- * Requirements: 11.1, 11.2, 11.3, 11.4
+ * State-changing requests must come from this app's own origin. SameSite=Lax
+ * treats every *.clintonlangosch.com app as same-site, so without this a
+ * sibling app could submit a forged request carrying the user's cookie.
+ */
+function sameOrigin(event: HandlerEvent, appOrigin: string): boolean {
+  const origin = header(event, "origin") ?? originOf(header(event, "referer"));
+  return origin === appOrigin;
+}
+
+/**
+ * Wrap a handler so it only runs for a signed-in user with the admin role on
+ * this app. The user's identity is attached as `event.user`.
  */
 export function withAuth(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handler: (event: AuthenticatedEvent, context: HandlerContext) => Promise<any>
 ): Handler {
   return async (event: HandlerEvent, context: HandlerContext) => {
+    let appOrigin: string;
     try {
-      // Extract token from Authorization header
-      const token = extractToken(event);
+      appOrigin = authSettings().appOrigin;
+    } catch (error) {
+      console.error("Auth configuration error:", error);
+      return errorResponse(500, "INTERNAL_SERVER_ERROR", "Server configuration error");
+    }
 
-      // Handle missing token
-      if (!token) {
-        return {
-          statusCode: 401,
-          body: JSON.stringify({
-            error: {
-              code: "MISSING_TOKEN",
-              message: "Authorization token is required",
-            },
-          } as ErrorResponse),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        };
-      }
+    if (STATE_CHANGING.has(event.httpMethod) && !sameOrigin(event, appOrigin)) {
+      return errorResponse(403, "FORBIDDEN", "Cross-origin request rejected");
+    }
 
-      // Verify and decode token
-      let decoded: { userId: string; username: string };
-      try {
-        decoded = verifyToken(token) as { userId: string; username: string };
-      } catch (error: unknown) {
-        // Handle expired token
-        if (error instanceof Error && error.name === "TokenExpiredError") {
-          return {
-            statusCode: 401,
-            body: JSON.stringify({
-              error: {
-                code: "TOKEN_EXPIRED",
-                message: "Authorization token has expired",
-              },
-            } as ErrorResponse),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          };
-        }
-
-        // Handle invalid token (JsonWebTokenError, NotBeforeError, etc.)
-        return {
-          statusCode: 401,
-          body: JSON.stringify({
-            error: {
-              code: "INVALID_TOKEN",
-              message: "Authorization token is invalid",
-            },
-          } as ErrorResponse),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        };
-      }
-
-      // Attach user information to event
-      const authenticatedEvent: AuthenticatedEvent = {
-        ...event,
-        user: {
-          userId: decoded.userId,
-          username: decoded.username,
-        },
-      };
-
-      // Call the wrapped handler with authenticated event
-      return handler(authenticatedEvent, context);
+    let result: AuthResult;
+    try {
+      result = await authenticate(event);
     } catch (error) {
       console.error("Authentication middleware error:", error);
-
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          error: {
-            code: "INTERNAL_SERVER_ERROR",
-            message: "An error occurred during authentication",
-          },
-        } as ErrorResponse),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
+      return errorResponse(500, "INTERNAL_SERVER_ERROR", "An error occurred during authentication");
     }
+    if (!result.ok) {
+      return errorResponse(result.statusCode, result.code, result.message);
+    }
+    if (!result.roles.includes(ADMIN_ROLE)) {
+      return errorResponse(403, "FORBIDDEN", "Admin access required");
+    }
+
+    const authenticatedEvent: AuthenticatedEvent = {
+      ...event,
+      user: {
+        sub: result.claims.sub,
+        email: result.claims.email,
+        name: result.claims.name,
+        roles: result.roles,
+      },
+    };
+    return handler(authenticatedEvent, context);
   };
 }
