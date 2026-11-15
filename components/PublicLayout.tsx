@@ -1,32 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Header from "./Header";
+import { useAuth } from "./AuthProvider";
 
 interface PublicLayoutProps {
   children: React.ReactNode;
 }
 
 export default function PublicLayout({ children }: PublicLayoutProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        const expirationTime = payload.exp * 1000;
-        const currentTime = Date.now();
-        setIsAuthenticated(currentTime < expirationTime);
-      } catch {
-        setIsAuthenticated(false);
-      }
-    }
-  }, []);
+  const { isAdmin } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col bg-dark-bg">
-      <Header isAuthenticated={isAuthenticated} />
+      <Header isAuthenticated={isAdmin} />
 
       <main className="flex-grow container mx-auto px-4 py-8">{children}</main>
 

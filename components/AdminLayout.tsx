@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "./AuthGuard";
+import { logout } from "@/lib/auth-client";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -14,11 +14,10 @@ interface AdminLayoutProps {
  * Requirements: 2.8
  */
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  const router = useRouter();
-
-  const handleLogout = () => {
-    localStorage.removeItem("auth_token");
-    router.push("/admin/login");
+  // Ends the clang-auth session, which signs out of every app on the domain.
+  const handleLogout = async () => {
+    await logout();
+    window.location.assign("/");
   };
 
   return (
@@ -54,7 +53,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               onClick={handleLogout}
               className="px-4 py-2 bg-accent-pink text-white rounded-md hover:bg-accent-pink-light focus:outline-none focus:ring-2 focus:ring-accent-pink transition-colors"
             >
-              Logout
+              Sign out
             </button>
           </div>
         </header>

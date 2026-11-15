@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Entry } from "@/types/models";
 import EditButton from "./EditButton";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import { authFetch } from "@/lib/auth-client";
 
 interface EntryListProps {
   entries: Entry[];
@@ -44,21 +45,10 @@ export default function EntryList({ entries, onDelete }: EntryListProps) {
     setError(null);
 
     try {
-      // Call delete API endpoint
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Authentication token not found");
-      }
-
-      const response = await fetch(
+      // Call delete API endpoint (the auth cookie is sent automatically)
+      const response = await authFetch(
         `/.netlify/functions/entries-delete/${entryId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        { method: "DELETE" }
       );
 
       if (!response.ok) {

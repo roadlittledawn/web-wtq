@@ -38,43 +38,18 @@ mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<database>?retryWrites
 mongodb+srv://clintonlexicon:mySecurePassword123@cluster0.abc123.mongodb.net/lexicon?retryWrites=true&w=majority
 ```
 
-#### 2. JWT_SECRET
+#### 2. Authentication (clang-auth)
 
-**Description:** Secret key used to sign and verify JWT authentication tokens
+Admin sign-in uses the shared clang-auth service. Lexicon holds no passwords or signing secrets; these values are all public configuration.
 
-**Format:** A strong random string (minimum 32 characters recommended)
+| Variable | Production value | Purpose |
+| --- | --- | --- |
+| `AUTH_BASE_URL` | `https://auth.clintonlangosch.com` | Functions fetch the public keys (JWKS) from here and check the token's issuer |
+| `NEXT_PUBLIC_AUTH_BASE_URL` | `https://auth.clintonlangosch.com` | Frontend sign-in, refresh and sign-out calls. Baked in at build time, so redeploy after changing it |
+| `AUTH_APP_SLUG` | `lexicon` | The app slug registered in clang-auth; users need the `admin` role on it |
+| `APP_ORIGIN` | `https://lexicon.clintonlangosch.com` | Write requests from any other origin are rejected (CSRF protection) |
 
-**How to generate:**
-
-```bash
-# Using Node.js
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-
-# Using OpenSSL
-openssl rand -hex 32
-```
-
-**Example:**
-
-```
-a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2
-```
-
-⚠️ **Important:** Never commit this value to version control. Use a different secret for production than development.
-
-#### 3. JWT_EXPIRATION
-
-**Description:** Token expiration time
-
-**Format:** Time string (e.g., "24h", "7d", "30m")
-
-**Recommended value:**
-
-```
-24h
-```
-
-#### 4. AUTHOR_IMAGE_API_URL
+#### 3. AUTHOR_IMAGE_API_URL
 
 **Description:** External API endpoint for fetching author images
 
@@ -92,7 +67,7 @@ a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2
 https://en.wikipedia.org/api/rest_v1
 ```
 
-#### 5. AUTHOR_IMAGE_API_KEY (Optional)
+#### 4. AUTHOR_IMAGE_API_KEY (Optional)
 
 **Description:** API key if your image service requires authentication
 
@@ -132,8 +107,10 @@ Netlify should automatically detect the settings from `netlify.toml`, but verify
    | Variable Name | Value | Notes |
    | --- | --- | --- |
    | `MONGODB_URI` | Your MongoDB connection string | From MongoDB Atlas |
-   | `JWT_SECRET` | Your generated secret key | Use strong random string |
-   | `JWT_EXPIRATION` | `24h` | Token validity period |
+   | `AUTH_BASE_URL` | `https://auth.clintonlangosch.com` | clang-auth |
+   | `NEXT_PUBLIC_AUTH_BASE_URL` | `https://auth.clintonlangosch.com` | clang-auth (frontend) |
+   | `AUTH_APP_SLUG` | `lexicon` | |
+   | `APP_ORIGIN` | `https://lexicon.clintonlangosch.com` | Must match the custom domain exactly |
    | `AUTHOR_IMAGE_API_URL` | Your image API URL | Wikipedia or custom |
    | `AUTHOR_IMAGE_API_KEY` | Your API key (if needed) | Optional |
 
@@ -164,8 +141,8 @@ After deployment completes:
 
 2. **Test the admin interface:**
 
-   - Navigate to `/admin/login`
-   - Log in with your credentials
+   - Navigate to `https://lexicon.clintonlangosch.com/admin` (the custom domain; the `*.netlify.app` URL can't receive the sign-in cookie)
+   - You're redirected to `auth.clintonlangosch.com`; sign in and you land back on the dashboard
    - Create a test entry
    - Edit the test entry
    - Delete the test entry
@@ -207,29 +184,15 @@ Or manually create these collections:
 
 - `entries` - Stores all entry types
 - `tags` - Stores tag information
-- `users` - Stores admin user credentials
 
-### 4. Create Admin User
+### 4. Grant Admin Access
 
-You'll need to manually create an admin user in the `users` collection:
+Admin users live in clang-auth, not in Lexicon's database. With the `clang-auth` CLI configured for production:
 
-```javascript
-// Use MongoDB Compass or mongosh
-db.users.insertOne({
-  username: "admin",
-  passwordHash: "$2b$12$...", // Generate using bcrypt with work factor 12
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-```
-
-To generate a password hash:
-
-```javascript
-const bcrypt = require("bcrypt");
-const password = "your-secure-password";
-const hash = await bcrypt.hash(password, 12);
-console.log(hash);
+```bash
+clang-auth app create lexicon --name Lexicon --origin https://lexicon.clintonlangosch.com   # once
+clang-auth user create someone@example.com --grant lexicon:admin    # prints a one-time setup link
+clang-auth grant set existing@example.com lexicon --role admin      # existing user
 ```
 
 ## Troubleshooting
@@ -274,22 +237,24 @@ console.log(hash);
 
 ### Authentication Issues
 
-**Issue:** Login fails with "Invalid credentials"
+**Issue:** `/admin` keeps redirecting to sign in, even right after signing in
 
 **Solution:**
 
-- Verify admin user exists in database
-- Check password hash was generated correctly
-- Ensure `JWT_SECRET` is set in Netlify
-- Check browser console for detailed errors
+- Use the custom domain (`lexicon.clintonlangosch.com`). The `*.netlify.app` URL and deploy previews never receive the `.clintonlangosch.com` cookie
+- Check `NEXT_PUBLIC_AUTH_BASE_URL` and `AUTH_BASE_URL` point at `https://auth.clintonlangosch.com`
 
-**Issue:** "Token expired" errors
+**Issue:** "You're signed in, but you don't have admin access"
 
-**Solution:**
+**Solution:** grant the role: `clang-auth grant set <email> lexicon --role admin`. Takes effect on the next token (within 15 minutes, or sign out and in)
 
-- Verify `JWT_EXPIRATION` is set correctly
-- Clear browser localStorage and log in again
-- Check system time is synchronized
+**Issue:** Saving fails with 403 "Cross-origin request rejected"
+
+**Solution:** `APP_ORIGIN` must exactly match the site's origin, e.g. `https://lexicon.clintonlangosch.com` (no trailing slash)
+
+**Issue:** Every admin request returns 401 and function logs show JWKS fetch errors
+
+**Solution:** check `https://auth.clintonlangosch.com/.well-known/jwks.json` loads and that `AUTH_BASE_URL` has no typo
 
 ### Image Loading Issues
 
@@ -337,9 +302,9 @@ If a deployment causes issues:
 3. Click the three dots → **Publish deploy**
 4. Confirm to instantly rollback
 
-## Custom Domain Setup (Optional)
+## Custom Domain Setup (Required for admin)
 
-To use a custom domain:
+Admin sign-in only works on a subdomain of `clintonlangosch.com`, because the clang-auth cookie is scoped to that domain. Lexicon uses `lexicon.clintonlangosch.com`. DNS for `clintonlangosch.com` is hosted on Netlify DNS, so the record is created automatically:
 
 1. Go to **Domain settings** in Netlify
 2. Click **Add custom domain**
@@ -349,7 +314,7 @@ To use a custom domain:
 
 ## Security Best Practices
 
-1. **Rotate JWT_SECRET periodically** (every 90 days recommended)
+1. **Review clang-auth grants periodically** (`clang-auth user list --app lexicon`)
 2. **Use strong passwords** for database users
 3. **Enable MongoDB Atlas IP whitelist** when possible
 4. **Monitor access logs** for suspicious activity

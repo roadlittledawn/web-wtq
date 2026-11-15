@@ -78,7 +78,7 @@ describe("Frontend Checkpoint - Component Imports", () => {
   it("should import all admin components without errors", async () => {
     const AdminLayout = (await import("../AdminLayout")).default;
     const AdminNav = (await import("../AdminNav")).default;
-    const LoginForm = (await import("../LoginForm")).default;
+    const AuthProvider = (await import("../AuthProvider")).AuthProvider;
     const AuthGuard = (await import("../AuthGuard")).default;
     const EntryList = (await import("../EntryList")).default;
     const EditButton = (await import("../EditButton")).default;
@@ -87,7 +87,7 @@ describe("Frontend Checkpoint - Component Imports", () => {
 
     expect(AdminLayout).toBeDefined();
     expect(AdminNav).toBeDefined();
-    expect(LoginForm).toBeDefined();
+    expect(AuthProvider).toBeDefined();
     expect(AuthGuard).toBeDefined();
     expect(EntryList).toBeDefined();
     expect(EditButton).toBeDefined();

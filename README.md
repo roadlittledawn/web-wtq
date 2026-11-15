@@ -7,7 +7,7 @@ A web application for curating and organizing a personal collection of words, ph
 - **Frontend**: Next.js 14+ with TypeScript and Tailwind CSS
 - **Backend**: Netlify Functions (serverless)
 - **Database**: MongoDB
-- **Authentication**: JWT with bcrypt
+- **Authentication**: [clang-auth](https://auth.clintonlangosch.com) shared sign-in (ES256 JWT in an HttpOnly cookie, verified with `jose`)
 - **Testing**: Vitest with fast-check for property-based testing
 
 ## Project Structure
@@ -45,24 +45,18 @@ A web application for curating and organizing a personal collection of words, ph
    cp .env.example .env
    ```
 
-4. Generate a password hash for your admin user:
-
-   ```bash
-   npx tsx scripts/generate-password-hash.ts yourPassword123
-   ```
-
-   Copy the output and add it to your `.env` file.
-
-5. Update the environment variables in `.env`:
+4. Update the environment variables in `.env`:
 
    - `MONGODB_URI`: Your MongoDB connection string
-   - `JWT_SECRET`: A strong secret key for JWT tokens (generate with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`)
-   - `ADMIN_USERNAME`: Your admin username (default: admin)
-   - `ADMIN_PASSWORD_HASH`: The bcrypt hash from step 4
+   - `AUTH_BASE_URL` / `NEXT_PUBLIC_AUTH_BASE_URL`: the clang-auth service (local: `http://auth.localtest.me:4000`)
+   - `AUTH_APP_SLUG`: `lexicon`
+   - `APP_ORIGIN`: this app's own origin (local: `http://lexicon.localtest.me:8888`)
    - `AUTHOR_IMAGE_API_URL`: External API URL for author images (optional)
    - `AUTHOR_IMAGE_API_KEY`: API key if required (optional)
 
-6. Set up database indexes:
+   Admin sign-in needs a local clang-auth; see [SETUP.md](SETUP.md).
+
+5. Set up database indexes:
 
    ```bash
    npx tsx scripts/setup-db.ts
@@ -73,18 +67,16 @@ A web application for curating and organizing a personal collection of words, ph
 Run the development server with Netlify Functions:
 
 ```bash
-netlify dev
+netlify dev --command "npx next dev -p 3002" --target-port 3002
 ```
 
-Or run Next.js directly (without serverless functions):
+Or run Next.js directly (without serverless functions, so no data or sign-in):
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:8888](http://localhost:8888) (netlify dev) or [http://localhost:3000](http://localhost:3000) (npm run dev) to view the application.
-
-Login at `/admin/login` with your configured username and password.
+Open [http://lexicon.localtest.me:8888](http://lexicon.localtest.me:8888) (netlify dev). Use that hostname rather than `localhost` so the sign-in cookie works. `/admin` redirects you to clang-auth to sign in.
 
 ### Testing
 

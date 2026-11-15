@@ -3,29 +3,14 @@
 import { QuoteEntry } from "@/types/models";
 import EditButton from "./EditButton";
 import MarkdownRenderer from "./MarkdownRenderer";
-import { useState, useEffect } from "react";
+import { useAuth } from "./AuthProvider";
 
 interface QuoteCardProps {
   entry: QuoteEntry;
 }
 
 export default function QuoteCard({ entry }: QuoteCardProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    // Check if user is authenticated
-    const token = localStorage.getItem("auth_token");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        const expirationTime = payload.exp * 1000;
-        const currentTime = Date.now();
-        setIsAuthenticated(currentTime < expirationTime);
-      } catch {
-        setIsAuthenticated(false);
-      }
-    }
-  }, []);
+  const { isAdmin: isAuthenticated } = useAuth();
 
   return (
     <div className="bg-dark-bg-secondary border-2 border-dark-border rounded-lg p-6 hover:border-accent-purple transition-all">
