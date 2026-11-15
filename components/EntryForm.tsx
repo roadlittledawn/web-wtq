@@ -8,6 +8,7 @@ import QuoteForm, { QuoteFormData } from "./QuoteForm";
 import HypotheticalForm, { HypotheticalFormData } from "./HypotheticalForm";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { Entry } from "@/types/models";
+import { authFetch } from "@/lib/auth-client";
 
 type EntryFormData =
   | WordFormData
@@ -41,22 +42,14 @@ export default function EntryForm({
     setSuccess("");
 
     try {
-      const token = localStorage.getItem("auth_token");
-      if (!token) {
-        setError("Authentication required. Please log in.");
-        router.push("/admin/login");
-        return;
-      }
-
       // If this is a quote with a new author (has author but no authorId), create the author first
       if (data.type === "quote" && data.author && !data.authorId) {
-        const authorResponse = await fetch(
+        const authorResponse = await authFetch(
           "/.netlify/functions/authors-create",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({ name: data.author }),
           }
@@ -93,11 +86,10 @@ export default function EntryForm({
 
       const method = mode === "edit" ? "PUT" : "POST";
 
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
       });
@@ -150,21 +142,9 @@ export default function EntryForm({
     setError("");
 
     try {
-      const token = localStorage.getItem("auth_token");
-      if (!token) {
-        setError("Authentication required. Please log in.");
-        router.push("/admin/login");
-        return;
-      }
-
-      const response = await fetch(
+      const response = await authFetch(
         `/.netlify/functions/entries-delete/${initialData._id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { method: "DELETE" }
       );
 
       const responseData = await response.json();
